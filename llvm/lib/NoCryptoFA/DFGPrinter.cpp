@@ -737,8 +737,8 @@ void DFGPrinter::doDOT(Module& M){
 }
 bool DFGPrinter::runOnModule(llvm::Module& M){
 
-    //if(PrintDot) doDOT(M);
-    //if(PrintHTML) doHTML(M);
+    if(PrintDot) doDOT(M);
+    if(PrintHTML) doHTML(M);
     if(PrintCSV) doCSV(M);
     return false;
 }
