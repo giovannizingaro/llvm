@@ -203,21 +203,6 @@ namespace llvm
     }
 using namespace llvm::NoCryptoFA;
 
-  class UnpackedInstMD {
-  public:
-    explicit UnpackedInstMD(Instruction *I)
-     : MD(known[I]) {
-    }
-    ~UnpackedInstMD() {
-    }
-
-    InstructionMetadata *operator->() const { return MD; }
-    InstructionMetadata &operator*() const { return *MD; }
-  private:
-    InstructionMetadata *MD;
-    unsigned Mask;
-  };
-
 	class TaggedData : public llvm::FunctionPass
 	{
 		public:

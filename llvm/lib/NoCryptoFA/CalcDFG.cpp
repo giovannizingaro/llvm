@@ -370,7 +370,9 @@ bool CalcDFG::runOnFunction(llvm::Function& Fun)
 	runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcFAKeyBackProp(p);return false;});
 	std::map<std::bitset<MAX_OUTBITS>, unsigned > EquivocationMap; 
 	runBatched(firstVulnerableUses, [&EquivocationMap, this](Instruction *p, long batchn)->bool {
-	UnpackedInstMD md(p);
+
+	llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
+	//UnpackedInstMD md(p);
 	if (md->EquivocationCount.size() > 0)
 		return false;
 	md->EquivocationCount.resize(md->out_hit.size());
@@ -387,7 +389,8 @@ bool CalcDFG::runOnFunction(llvm::Function& Fun)
 	});
 
 	runBatched(firstVulnerableUses, [&EquivocationMap, this](Instruction *p, long batchn)->bool {
-		UnpackedInstMD md(p);
+		llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
+		//UnpackedInstMD md(p);
 		if (md->EquivocationCountSet) return false;
 
 		for (unsigned i = 0, e = md->out_hit.size(); i != e; ++i)
