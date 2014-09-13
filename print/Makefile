@@ -33,7 +33,7 @@ cifrario.graphml: cifrario.dot
 cifrario.yed.graphml: cifrario.graphml yedize.xslt
 	saxon8  $< yedize.xslt >$@
 
-everything.pdf:	prot_dpa.pdf backward.pdf forward.pdf nonlinbit.pdf
+everything.pdf:	prot_dpa.pdf backward.pdf forward.pdf nonlinbit.pdf nonlinbyte.pdf
 	ln -s ../everything.tex . ||true
 	pdflatex everything.tex
 
@@ -47,7 +47,10 @@ forward.pdf: cifrario.dot cifrario.tex
 	pdflatex -jobname=forward '\newcommand{\filename}{forward.dat}\newcommand{\currentalgo}{$(shell basename $$PWD)}\input{cifrario}'
 	
 nonlinbit.pdf: cifrario.dot cifrario.tex
-	pdflatex -jobname=nonlin '\newcommand{\filename}{nonlinbit.dat}\newcommand{\currentalgo}{$(shell basename $$PWD)}\input{cifrario}'
+	pdflatex -jobname=nonlinbit '\newcommand{\filename}{nonlinbit.dat}\newcommand{\currentalgo}{$(shell basename $$PWD)}\input{cifrario}'
+
+nonlinbyte.pdf: cifrario.dot cifrario.tex
+	pdflatex -jobname=nonlinbyte '\newcommand{\filename}{nonlinbyte.dat}\newcommand{\currentalgo}{$(shell basename $$PWD)}\input{cifrario}'
 
 clean:
 	rm -r *.dir *.s *.bc *.dot *.asm *.svg *.pdf *.aux *.dat *.log *.tex

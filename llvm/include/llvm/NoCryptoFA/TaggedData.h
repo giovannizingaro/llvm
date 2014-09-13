@@ -19,16 +19,16 @@ using namespace llvm;
 namespace llvm
 {
 	void initializeTaggedDataPass(PassRegistry& Registry);
-	namespace NoCryptoFA
-	{
+	namespace NoCryptoFA{
+
 		struct InstructionMetadata;
 		extern std::map<llvm::Instruction*, llvm::NoCryptoFA::InstructionMetadata*> known;
 		struct StatisticInfo {
-            int max;
-            int min;
-            int min_nonzero;
-            int avg;
-            int avg_nonzero;
+			int max;
+			int min;
+			int min_nonzero;
+			int avg;
+			int avg_nonzero;
 			StatisticInfo() {
 				max = 0;
 				min = 0;
@@ -37,55 +37,58 @@ namespace llvm
 				avg_nonzero = 0;
 			}
 		};
+
 		struct InstructionMetadata {
 				enum InstructionSource {
-				    ORIGINAL_PROGRAM,
-				    CREATE_MASK,
-				    XOR_MASKED,
-		                    OR_MASKED,
-				    AND_MASKED,
-				    CAST_MASKED,
-				    SHIFT_MASKED,
-				    SBOX_MASKED,
-				    SELECT_MASKED,
-				    REMOVE_MASK,
-				    MASKED_FUNCTION
-                };
-                mutex lock;
-				bool isAKeyOperation;
-				bool isAKeyStart;
-                bool isVulnerableTopSubKey;
-                bool isVulnerableBottomSubKey;
-                bool isSubKey;
-				bool isSbox;
-				bool hasToBeProtected_pre;
-				bool hasToBeProtected_post;
-                bool fault_keys_calculated;
-				bool post_FirstToMeetKey;
-				bool hasBeenMasked;
-				bool hasMetPlaintext;
-                long PlaintextHeight;
-                long CiphertextHeight;
-                std::string NodeName;
-				InstructionSource origin;
-                std::vector<std::bitset<MAX_KEYBITS> > keydep;
-                std::bitset<MAX_KEYBITS> keydep_own;
-                std::vector<std::bitset<MAX_SUBBITS> > pre;
-                std::vector<std::bitset<MAX_KEYBITS> > pre_keydep;
-                std::bitset<MAX_SUBBITS> pre_own;
-                std::vector<std::bitset<MAX_SUBBITS> > post;
-                std::vector<std::bitset<MAX_KEYBITS> > post_keydep;
-                std::bitset<MAX_SUBBITS> post_own;
-				Instruction* my_instruction;
-				Instruction* unmasked_value;
-				std::vector<Value*> MaskedValues;
-                StatisticInfo keydep_stats;
-                StatisticInfo pre_stats;
-				StatisticInfo post_stats;
-				StatisticInfo NonLinStats;
+					ORIGINAL_PROGRAM,
+					CREATE_MASK,
+					XOR_MASKED,
+		        		OR_MASKED,
+					AND_MASKED,
+					CAST_MASKED,
+					SHIFT_MASKED,
+					SBOX_MASKED,
+					SELECT_MASKED,
+					REMOVE_MASK,
+					MASKED_FUNCTION
+		};
+
+		mutex lock;
+		bool isAKeyOperation;
+		bool isAKeyStart;
+		bool isVulnerableTopSubKey;
+		bool isVulnerableBottomSubKey;
+		bool isSubKey;
+		bool isSbox;
+		bool hasToBeProtected_pre;
+		bool hasToBeProtected_post;
+		bool fault_keys_calculated;
+		bool post_FirstToMeetKey;
+		bool hasBeenMasked;
+		bool hasMetPlaintext;
+		long PlaintextHeight;
+		long CiphertextHeight;
+		std::string NodeName;
+		InstructionSource origin;
+		std::vector<std::bitset<MAX_KEYBITS> > keydep;
+		std::bitset<MAX_KEYBITS> keydep_own;
+		std::vector<std::bitset<MAX_SUBBITS> > pre;
+		std::vector<std::bitset<MAX_KEYBITS> > pre_keydep;
+		std::bitset<MAX_SUBBITS> pre_own;
+		std::vector<std::bitset<MAX_SUBBITS> > post;
+		std::vector<std::bitset<MAX_KEYBITS> > post_keydep;
+		std::bitset<MAX_SUBBITS> post_own;
+		Instruction* my_instruction;
+		Instruction* unmasked_value;
+		std::vector<Value*> MaskedValues;
+		StatisticInfo keydep_stats;
+		StatisticInfo pre_stats;
+		StatisticInfo post_stats;
+		StatisticInfo NonLinStats;
+		StatisticInfo NonLinStatsByte;
                 /*Only for SBOXes {*/
-                bool deadBitsCalculated;
-                std::bitset<MAX_VALBITS> deadBits;
+		bool deadBitsCalculated;
+		std::bitset<MAX_VALBITS> deadBits;
                 /* } */
                 /*For fault analysis {*/
                 std::vector<std::bitset<MAX_OUTBITS> > out_hit;
@@ -93,6 +96,7 @@ namespace llvm
                 std::vector<std::bitset<MAX_OUTBITS> > out_hit_word;
                 std::bitset<MAX_OUTBITS> out_hit_own;
                 std::bitset<MAX_KMBITS> fullsubkey_own;
+
                 std::vector<std::vector<std::bitset<MAX_KMBITS> > > fault_keys;
                 std::vector<std::vector<std::bitset<MAX_KEYBITS> > > fault_keys_keydep;
                 std::vector<std::vector<std::bitset<MAX_KMBITS> > > fault_keys_byte;
@@ -100,15 +104,13 @@ namespace llvm
                 std::vector<std::vector<std::bitset<MAX_KMBITS> > > fault_keys_word;
                 std::vector<std::vector<std::bitset<MAX_KEYBITS> > > fault_keys_keydep_word;
 
-
-                std::vector<std::bitset<MAX_SUBBITS> > LinearDeps;
-                std::vector<std::bitset<MAX_SUBBITS> > NonLinearDeps;
-                std::vector<std::bitset<MAX_KEYBITS> > LinearKeyDeps;
-                std::vector<std::bitset<MAX_KEYBITS> > NonLinearKeyDeps;
-				std::vector<unsigned> EquivocationCount;
-				bool EquivocationCountSet;
-
-                /*      {  //Statistics for output  */
+		std::vector<std::bitset<MAX_SUBBITS> > LinearDeps;
+		std::vector<std::bitset<MAX_SUBBITS> > NonLinearDeps;
+		std::vector<std::bitset<MAX_KEYBITS> > LinearKeyDeps;
+		std::vector<std::bitset<MAX_KEYBITS> > NonLinearKeyDeps;
+		std::vector<unsigned> EquivocationCount;
+		bool EquivocationCountSet;
+		/*
                             struct {
                                 char calculated = false;
                                 int min_keylen_nz;
@@ -127,50 +129,49 @@ namespace llvm
                                 int hw_outhit_of_min_keylen_nz;
                                 bitset<MAX_OUTBITS> outhit_of_min_keylen_nz;
                             } faultable_stats_word;
-                /*      } */
-                /* } */
-                InstructionMetadata(Instruction* ptr): lock(),keydep(0), keydep_own(0),pre(0),pre_keydep(0),pre_own(0), post(0),post_keydep(0), post_own(0), MaskedValues(0), keydep_stats(),pre_stats(),post_stats() {
-					init();
-					my_instruction = ptr;
-					known[ptr] = this;
-				}
-				InstructionMetadata() {
-					init();
-				}
+		*/
+		InstructionMetadata(Instruction* ptr): lock(),keydep(0), keydep_own(0),pre(0),pre_keydep(0),pre_own(0), post(0),post_keydep(0), post_own(0), MaskedValues(0), keydep_stats(),pre_stats(),post_stats() {
+			init();
+			my_instruction = ptr;
+			known[ptr] = this;
+		}
+		
+		InstructionMetadata() {
+			init();
+		}
 
 		static llvm::NoCryptoFA::InstructionMetadata* getNewMD(llvm::Instruction* ptr) {
-					llvm::NoCryptoFA::InstructionMetadata* md;
-					if(NoCryptoFA::known.find(ptr) != NoCryptoFA::known.end()) {
-						md = NoCryptoFA::known[ptr];
-					} else {
-						md = new llvm::NoCryptoFA::InstructionMetadata(ptr);
-					}
-					return md;
-				}
-                void reset(){
-                    unmasked_value = NULL;
-                    isVulnerableBottomSubKey=false;
-                    isVulnerableTopSubKey=false;
-                    isSubKey=false;
-                    post_FirstToMeetKey = false;
-                    pre_own.reset();
-                    post_own.reset();
-                    keydep_own.reset();
-                    out_hit_own.reset();
-                    fullsubkey_own.reset();
-                    hasToBeProtected_pre = false;
-                    hasToBeProtected_post = false;
-                    CiphertextHeight= 0xffffffff;
-                    hasBeenMasked = false;
-                    packed=false;
-                    unpacked_for =~((unsigned int)0);
+			llvm::NoCryptoFA::InstructionMetadata* md;
+			if(NoCryptoFA::known.find(ptr) != NoCryptoFA::known.end()) {
+				md = NoCryptoFA::known[ptr];
+			} else {
+				md = new llvm::NoCryptoFA::InstructionMetadata(ptr);
+			}
+			return md;
+		}
 
-                }
-                std::string& getAsString(){
-                    if(representation.length() > 0) return representation;
-                    llvm::raw_string_ostream os(representation);
-                    os << *my_instruction;
-                    return representation;
+		void reset(){
+			unmasked_value = NULL;
+			isVulnerableBottomSubKey=false;
+			isVulnerableTopSubKey=false;
+			isSubKey=false;
+			post_FirstToMeetKey = false;
+			pre_own.reset();
+			post_own.reset();
+			keydep_own.reset();
+			out_hit_own.reset();
+			fullsubkey_own.reset();
+			hasToBeProtected_pre = false;
+			hasToBeProtected_post = false;
+			CiphertextHeight= 0xffffffff;
+			hasBeenMasked = false;
+		}
+
+		std::string& getAsString(){
+			if(representation.length() > 0) return representation;
+				llvm::raw_string_ostream os(representation);
+			os << *my_instruction;
+			return representation;
                 }
                 unsigned int getMySecurityMargin_pre(){
                     return std::min(keydep_stats.min_nonzero,pre_stats.min_nonzero);
@@ -182,10 +183,9 @@ namespace llvm
                 int getMySecurityMargin(){
                     return std::min(getMySecurityMargin_pre(),getMySecurityMargin_post());
                 }
-			private:
+		
+		private:
                 std::string representation;
-                bool packed=false;
-                unsigned int unpacked_for=~((unsigned int)0);
 
 		void init() {
 			origin = InstructionMetadata::ORIGINAL_PROGRAM;
@@ -205,12 +205,10 @@ using namespace llvm::NoCryptoFA;
 
   class UnpackedInstMD {
   public:
-    explicit UnpackedInstMD(Instruction *I, unsigned mask = 0)
+    explicit UnpackedInstMD(Instruction *I)
      : MD(known[I]) {
-      //MD->unpack(mask);
     }
     ~UnpackedInstMD() {
-      //MD->pack();
     }
 
     InstructionMetadata *operator->() const { return MD; }
@@ -240,7 +238,7 @@ using namespace llvm::NoCryptoFA;
 			}
 			bool functionMarked(Function* ptr);
 
-		private:
+			private:
 			// This is the information computed by the analysis.
 
 			std::set<Function*> markedfunctions;

@@ -45,7 +45,7 @@
 \stdrounds
 \stdbits
 \def \mark {instruction}
-\ifcase\boolexpr{ \isequal{\filename}{prot_dpa.dat} \OR \isequal{\filename}{backward.dat} \OR \isequal{\filename}{forward.dat} \OR \isequal{\filename}{nonlinbit.dat}}
+\ifcase\boolexpr{ \isequal{\filename}{prot_dpa.dat} \OR \isequal{\filename}{backward.dat} \OR \isequal{\filename}{forward.dat} \OR \isequal{\filename}{nonlinbit.dat} \OR \isequal{\filename}{nonlinbyte.dat}}
 	\switch
 	\case{\isequal{\currentalgo}{aes128}}
 		\def \mark {instructionAES128}
@@ -61,7 +61,7 @@
 		\def \mark {instructionDES}
 	\case{\isequal{\currentalgo}{3des2} \OR \isequal{\currentalgo}{3des3}}
 		\def \mark {instruction3DES}
-		\ifcase\boolexpr{\isequal{\filename}{backward.dat} \OR \isequal{\filename}{forward.dat} \OR \isequal{\filename}{nonlin.dat} }
+		\ifcase\boolexpr{\isequal{\filename}{backward.dat} \OR \isequal{\filename}{forward.dat} \OR \isequal{\filename}{nonlinbit.dat} }
 			\tdesfullbits
 		\else
 			\tdesbits

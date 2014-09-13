@@ -415,11 +415,16 @@ void DFGPrinter::doCSV(Module& M){
                         r->prot_dpa.push_back(0);
                 else
                         r->prot_dpa.push_back(prot);
-		//Nonlin bit
-                if(md->NonLinStats.min_nonzero == 999999 )
+		//Nonlin byte
+                if(md->NonLinStatsByte.min_nonzero == 999999 )
                         r->nonlinbit.push_back(0);
                 else
                         r->nonlinbit.push_back(md->NonLinStats.min_nonzero);
+                if(md->NonLinStats.min_nonzero == 999999 )
+                        r->nonlinbyte.push_back(0);
+                else
+                        r->nonlinbyte.push_back(md->NonLinStatsByte.min_nonzero);
+
                 }//fine if
 
 		}//fine for
@@ -513,6 +518,7 @@ void DFGPrinter::doCSV(Module& M){
 		PRINT(rounds,backward,max);
 		PRINT(rounds,prot_dpa,max);
 		PRINT(rounds,nonlinbit,max);
+		PRINT(rounds,nonlinbyte,max);
         }
     }
 
