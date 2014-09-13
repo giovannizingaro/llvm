@@ -27,7 +27,7 @@ void checkNeedsMasking_post(Instruction* ptr, NoCryptoFA::InstructionMetadata* m
 #define is_bit_set(what,num) ((what) & (1<<(num)))
 #include "CalcPreVisitor.h"
 #include "CalcPostVisitor.h"
-#include "CalcFAVisitor.h"
+//#include "CalcFAVisitor.h"
 #include "NeedsMaskPreVisitor.h"
 #include "NeedsMaskPostVisitor.h"
 #include "DeadBits.h"
@@ -235,23 +235,23 @@ bool CalcDFG::runOnFunction(llvm::Function& Fun)
 		if(NoCryptoFA::known[I]->isAKeyOperation) {
 			NoCryptoFA::known[I]->pre_keydep.resize(0);
 			NoCryptoFA::known[I]->post_keydep.resize(0);
-			NoCryptoFA::known[I]->fault_keys_keydep.resize(0);
-			NoCryptoFA::known[I]->fault_keys_keydep_byte.resize(0);
-			NoCryptoFA::known[I]->fault_keys_keydep_word.resize(0);
-			NoCryptoFA::known[I]->out_hit_word.resize(0);
-			NoCryptoFA::known[I]->out_hit_byte.resize(0);
+//			NoCryptoFA::known[I]->fault_keys_keydep.resize(0);
+//			NoCryptoFA::known[I]->fault_keys_keydep_byte.resize(0);
+//			NoCryptoFA::known[I]->fault_keys_keydep_word.resize(0);
+//			NoCryptoFA::known[I]->out_hit_word.resize(0);
+//			NoCryptoFA::known[I]->out_hit_byte.resize(0);
 			NoCryptoFA::known[I]->keydep.resize(size);
 			NoCryptoFA::known[I]->post.resize(size);
 			NoCryptoFA::known[I]->pre.resize(size);
 			NoCryptoFA::known[I]->out_hit.resize(size);
-			NoCryptoFA::known[I]->fault_keys.resize(size);
+//			NoCryptoFA::known[I]->fault_keys.resize(size);
 
 			for(unsigned int i = 0; i < size; ++i) {
 			NoCryptoFA::known[I]->keydep[i] = bitset<MAX_KEYBITS>(0);
 			NoCryptoFA::known[I]->pre[i] = bitset<MAX_SUBBITS>(0);
 			NoCryptoFA::known[I]->post[i] = bitset<MAX_SUBBITS>(0);
 			NoCryptoFA::known[I]->out_hit[i] = bitset<MAX_OUTBITS>(0);
-			NoCryptoFA::known[I]->fault_keys[i] = vector<bitset<MAX_KMBITS> >(MAX_OUTBITS,bitset<MAX_KMBITS>(0));
+//			NoCryptoFA::known[I]->fault_keys[i] = vector<bitset<MAX_KMBITS> >(MAX_OUTBITS,bitset<MAX_KMBITS>(0));
 			}
 			calcDeadBits(I);
 			}
@@ -285,7 +285,7 @@ bool CalcDFG::runOnFunction(llvm::Function& Fun)
 	vector<bitset<MAX_KEYBITS> > pre_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableTop,&NoCryptoFA::InstructionMetadata::pre_own,&MSBEverSet,"vuln_top");
 	vector<bitset<MAX_KEYBITS> > post_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableBottom,&NoCryptoFA::InstructionMetadata::post_own,&MSBEverSet,"vuln_bottom");
 	MSBEverSet_Fault=0;
-	vector<bitset<MAX_KEYBITS> > fault_subkeytokey = assignKeyOwn<MAX_KMBITS>(allKeyMaterial,&NoCryptoFA::InstructionMetadata::fullsubkey_own,&MSBEverSet_Fault,"subkey");
+	//vector<bitset<MAX_KEYBITS> > fault_subkeytokey = assignKeyOwn<MAX_KMBITS>(allKeyMaterial,&NoCryptoFA::InstructionMetadata::fullsubkey_own,&MSBEverSet_Fault,"subkey");
 	errs() << "most vuln subkeys found\n";
 	runBatched(vulnerableTop, [this](Instruction * p,long batchn)->bool {calcPre(p);return false;});
 	set<Instruction*> firstVulnerableUses = set<Instruction*>();
@@ -366,6 +366,7 @@ bool CalcDFG::runOnFunction(llvm::Function& Fun)
 	}
 	runBatched(cipherOutValues, [this](Instruction * p,long batchn)->bool { calcOuthit(p); return false;});
 	errs() << "outhit calc done\n";
+
 	errs() << "PORCO INIT\n";
 	runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcFAKeyBackProp(p);return false;});
 	std::map<std::bitset<MAX_OUTBITS>, unsigned > EquivocationMap; 
@@ -730,7 +731,7 @@ static void ClearMatrix(vector<bitset<BITNUM> >& vec)
 }
 
 
-
+/*
 void CalcDFG::calcFAKeyProp(Instruction* ptr)
 {
     NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
@@ -752,7 +753,7 @@ void CalcDFG::calcFAKeyProp(Instruction* ptr)
             }
         }
     }
-    /*repeat information on all out_hit bytes on the real structure*/
+    /*repeat information on all out_hit bytes on the real structure
     for(unsigned long i = 0, max=  data_key.size(); i < max; i++){
         for(unsigned long j = 0; j < md->fault_keys[i].size(); j++){
             if(md->out_hit[i][j]) md->fault_keys[i][j] = data_key[i];
@@ -788,6 +789,8 @@ void CalcDFG::calcFAKeyProp(Instruction* ptr)
         toBeVisited_mutex.unlock();
     }
 }
+*/
+
 void CalcDFG::calcOuthit(Instruction* ptr)
 {
     NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];

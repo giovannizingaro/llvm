@@ -92,6 +92,8 @@ namespace llvm
                 /* } */
                 /*For fault analysis {*/
                 std::vector<std::bitset<MAX_OUTBITS> > out_hit;
+                std::bitset<MAX_OUTBITS> out_hit_own;
+/*
                 std::vector<std::bitset<MAX_OUTBITS> > out_hit_byte;
                 std::vector<std::bitset<MAX_OUTBITS> > out_hit_word;
                 std::bitset<MAX_OUTBITS> out_hit_own;
@@ -103,7 +105,7 @@ namespace llvm
                 std::vector<std::vector<std::bitset<MAX_KEYBITS> > > fault_keys_keydep_byte;
                 std::vector<std::vector<std::bitset<MAX_KMBITS> > > fault_keys_word;
                 std::vector<std::vector<std::bitset<MAX_KEYBITS> > > fault_keys_keydep_word;
-
+*/
 		std::vector<std::bitset<MAX_SUBBITS> > LinearDeps;
 		std::vector<std::bitset<MAX_SUBBITS> > NonLinearDeps;
 		std::vector<std::bitset<MAX_KEYBITS> > LinearKeyDeps;
@@ -135,7 +137,7 @@ namespace llvm
 			my_instruction = ptr;
 			known[ptr] = this;
 		}
-		
+
 		InstructionMetadata() {
 			init();
 		}
@@ -160,7 +162,7 @@ namespace llvm
 			post_own.reset();
 			keydep_own.reset();
 			out_hit_own.reset();
-			fullsubkey_own.reset();
+//			fullsubkey_own.reset();
 			hasToBeProtected_pre = false;
 			hasToBeProtected_post = false;
 			CiphertextHeight= 0xffffffff;
@@ -183,7 +185,7 @@ namespace llvm
                 int getMySecurityMargin(){
                     return std::min(getMySecurityMargin_pre(),getMySecurityMargin_post());
                 }
-		
+
 		private:
                 std::string representation;
 
