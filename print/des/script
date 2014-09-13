@@ -1,4 +1,0 @@
-./clang -O0 cifrario.c -S -emit-llvm -o out.ll
-./opt -O2 out.ll -o out.opt.n -S
-./opt -O2 -TaggedData out.ll -o out2.opt -S
-#nano out.opt
