@@ -16,26 +16,6 @@
 using namespace std;
 using namespace llvm;
 
-enum PackWhat {     UNPACK_KEYDEP = 0,
-                    UNPACK_PRE_KEYDEP=1,
-                    UNPACK_POST_KEYDEP=2,
-                    UNPACK_PRE=3,
-                    UNPACK_POST=4,
-                    UNPACK_OH=5,
-                    UNPACK_OH_BYTE=6,
-                    UNPACK_OH_WORD=7,
-                    UNPACK_FAULT=8,
-                    UNPACK_FAULT_KEYDEP=9,
-                    UNPACK_FAULT_BYTE=10,
-                    UNPACK_FAULT_KEYDEP_BYTE=11,
-                    UNPACK_FAULT_WORD=12,
-                    UNPACK_FAULT_KEYDEP_WORD=13,
-                    UNPACK_LINEAR_DEPS=14,
-                    UNPACK_NON_LINEAR_DEPS=15,
-                    UNPACK_LINEAR_KEYDEPS=16,
-                    UNPACK_NON_LINEAR_KEYDEPS=17,
-};
-#define PackMask(w) (1<<w)
 namespace llvm
 {
 	void initializeTaggedDataPass(PassRegistry& Registry);
