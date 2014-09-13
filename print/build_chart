@@ -1,0 +1,5 @@
+#!/bin/bash
+cd $(readlink -f $(dirname $0))
+cat |bash aggiustamatrici|bash convert_tabfigure_to_tikz.sh coordinates.dat
+pdflatex instruction_resistance_map.tex
+

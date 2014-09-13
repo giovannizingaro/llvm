@@ -1,0 +1,3 @@
+rm *.dot *.tex *.aux *.dat *.log *.pdf *.prop.s *.s *.opt.3.s
+rm -r out.dir
+rm -r cifrario.dir

@@ -1,0 +1,26 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage[margin=1cm]{geometry}
+\pagestyle{empty}
+\begin{document}
+\newcommand{\grafico}[1]{\\\includegraphics[width=0.75\linewidth]{#1}\\}
+\begin{center}
+
+Forward SDFA:\grafico{forward}
+Backward SDFA:\grafico{backward}
+Zones that need protection from DPA:\grafico{prot_dpa}
+%(BIT)Key resistance from faults:\grafico{faultresist_bit}
+%(BIT)Output bits hit by the weakest bit w.r.t key resistance from faults:\grafico{out_hit_weakest_bit}
+%(BYTE)Key resistance from faults:\grafico{faultresist_byte}
+%(BYTE)Output bits hit by the weakest byte w.r.t key resistance from faults:\grafico{out_hit_weakest_byte}
+%(WORD)Key resistance from faults:\grafico{faultresist_word}
+%(WORD)Output bits hit by the weakest word w.r.t key resistance from faults:\grafico{out_hit_weakest_word}
+
+
+
+
+\end{center}
+
+\end{document}
+
