@@ -132,7 +132,7 @@ public:
     Value *OtherOp = I.getOperand(0) == Target ? I.getOperand(1)
                                                : I.getOperand(0);
 
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     if (ConstantInt *C = dyn_cast<ConstantInt>(OtherOp)) {
       TargetMD->LinearDeps = CurMD->LinearDeps;
@@ -142,7 +142,7 @@ public:
 
     Instruction *OtherI = cast<Instruction>(OtherOp);
 
-    UnpackedInstMD OtherMD(OtherI, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD OtherMD(OtherI);
 
     TargetMD->LinearDeps |= CurMD->LinearDeps | OtherMD->LinearDeps;
     TargetMD->NonLinearDeps |= CurMD->NonLinearDeps | OtherMD->NonLinearDeps;
@@ -151,7 +151,7 @@ public:
   void visitShl(BinaryOperator &I) LLVM_OVERRIDE {
     if (Target == I.getOperand(1)) return;
 
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     if (ConstantInt *C = dyn_cast<ConstantInt>(I.getOperand(1))) {
       unsigned ShAmt = C->getZExtValue();
@@ -162,7 +162,7 @@ public:
     }
 
     Instruction *OtherI = cast<Instruction>(I.getOperand(1));
-    UnpackedInstMD OtherMD(OtherI, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD OtherMD(OtherI);
 
     TargetMD->LinearDeps |= CurMD->LinearDeps;
 
@@ -174,7 +174,7 @@ public:
   void visitLShr(BinaryOperator &I) LLVM_OVERRIDE {
     if (Target == I.getOperand(1)) return;
 
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     if (ConstantInt *C = dyn_cast<ConstantInt>(I.getOperand(1))) {
       unsigned ShAmt = C->getZExtValue();
@@ -185,7 +185,7 @@ public:
     }
 
     Instruction *OtherI = cast<Instruction>(I.getOperand(1));
-    UnpackedInstMD OtherMD(OtherI, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD OtherMD(OtherI);
 
     TargetMD->LinearDeps |= CurMD->LinearDeps;
 
@@ -202,7 +202,7 @@ public:
     Value *OtherOp = I.getOperand(0) == Target ? I.getOperand(1)
                                                : I.getOperand(0);
 
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     if (ConstantInt *C = dyn_cast<ConstantInt>(OtherOp)) {
       unsigned Value = C->getZExtValue();
@@ -212,7 +212,7 @@ public:
     }
 
     Instruction *OtherI = cast<Instruction>(OtherOp);
-    UnpackedInstMD OtherMD(OtherI, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD OtherMD(OtherI);
     
     TargetMD->NonLinearDeps |= CurMD->NonLinearDeps | CurMD->LinearDeps |
                                OtherMD->NonLinearDeps | OtherMD->LinearDeps |
@@ -223,7 +223,7 @@ public:
     Value *OtherOp = I.getOperand(0) == Target ? I.getOperand(1)
                                                : I.getOperand(0);
 
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     if (ConstantInt *C = dyn_cast<ConstantInt>(OtherOp)) {
       unsigned Value = C->getZExtValue();
@@ -233,7 +233,7 @@ public:
     }
 
     Instruction *OtherI = cast<Instruction>(OtherOp);
-    UnpackedInstMD OtherMD(OtherI, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD OtherMD(OtherI);
     
     TargetMD->NonLinearDeps |= CurMD->NonLinearDeps | CurMD->LinearDeps |
                                OtherMD->NonLinearDeps | OtherMD->LinearDeps |
@@ -245,7 +245,7 @@ public:
     Value *OtherOp = I.getOperand(0) == Target ? I.getOperand(1)
                                                : I.getOperand(0);
 
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     if (ConstantInt *C = dyn_cast<ConstantInt>(OtherOp)) {
       unsigned LinLimit = 1 + countTrailingZeros(C->getZExtValue());
@@ -264,7 +264,7 @@ public:
     }
 
     Instruction *OtherI = cast<Instruction>(OtherOp);
-    UnpackedInstMD OtherMD(OtherI, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD OtherMD(OtherI);
 
     unsigned LinLimit = 1;
     uint64_t Mask = (uint64_t(1) << LinLimit) - 1;
@@ -288,7 +288,7 @@ public:
     Value *OtherOp = I.getOperand(0) == Target ? I.getOperand(1)
                                                : I.getOperand(0);
 
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     if (ConstantInt *C = dyn_cast<ConstantInt>(OtherOp)) {
       unsigned LinLimit = 1 + countTrailingZeros(~ C->getZExtValue());
@@ -307,7 +307,7 @@ public:
     }
 
     Instruction *OtherI = cast<Instruction>(OtherOp);
-    UnpackedInstMD OtherMD(OtherI, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD OtherMD(OtherI);
 
     unsigned LinLimit = 1;
     uint64_t Mask = (uint64_t(1) << LinLimit) - 1;
@@ -325,7 +325,7 @@ public:
   }
 
   void visitGetElementPtrInst(GetElementPtrInst &I) LLVM_OVERRIDE {
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     assert(I.getNumIndices() == 2);
 
@@ -338,7 +338,7 @@ public:
   }
 
   void visitLoad(LoadInst &I) LLVM_OVERRIDE {
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     BitMatrix<MAX_SUBBITS> Base = (CurMD->LinearDeps | CurMD->NonLinearDeps) &
                                  ~TargetMD->deadBits;
@@ -348,21 +348,21 @@ public:
   }
 
   void visitZExtInst(ZExtInst &I) LLVM_OVERRIDE {
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     TargetMD->LinearDeps |= CurMD->LinearDeps;
     TargetMD->NonLinearDeps |= CurMD->NonLinearDeps;
   }
 
   void visitSExtInst(SExtInst &I) LLVM_OVERRIDE {
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     TargetMD->LinearDeps |= CurMD->LinearDeps;
     TargetMD->NonLinearDeps |= CurMD->NonLinearDeps;
   }
 
   void visitTruncInst(TruncInst &I) LLVM_OVERRIDE {
-    UnpackedInstMD CurMD(&I, PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
+    UnpackedInstMD CurMD(&I);
 
     TargetMD->LinearDeps |= CurMD->LinearDeps;
     TargetMD->NonLinearDeps |= CurMD->NonLinearDeps;

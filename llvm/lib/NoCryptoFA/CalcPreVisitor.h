@@ -1,7 +1,7 @@
 #include <llvm/InstVisitor.h>
 #include <llvm/NoCryptoFA/All.h>
 using namespace llvm;
-template<int MAXBITS,vector<bitset<MAXBITS> > NoCryptoFA::InstructionMetadata::*DATA,bitset<MAXBITS> NoCryptoFA::InstructionMetadata::*OWN, unsigned int UNPACKFLAGS>
+template<int MAXBITS,vector<bitset<MAXBITS> > NoCryptoFA::InstructionMetadata::*DATA,bitset<MAXBITS> NoCryptoFA::InstructionMetadata::*OWN>
 /*
 This template requires some explaination:
 This class is an InstructionVisitor (see LLVM doc.)
@@ -17,7 +17,7 @@ This is implemented through the use of pointers-to-members, that means that ever
 So through this class you'll find *DATA and *OWN. They are not usual pointers-to-memory, but pointers-to-member.
 Template parameter MAXBITS is introduced to keep all of the bitsets of the first case smaller than those of the second.
 */
-class CalcForwardVisitor : public InstVisitor<CalcForwardVisitor<MAXBITS, DATA, OWN, UNPACKFLAGS> >
+class CalcForwardVisitor : public InstVisitor<CalcForwardVisitor<MAXBITS, DATA, OWN> >
 {
 	protected:
 		template<int NUMBITS>

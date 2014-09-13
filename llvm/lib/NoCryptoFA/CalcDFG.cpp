@@ -141,144 +141,8 @@ min_keylen_nz = min[for each data bit]( min[for each output bit](key bits at 1))
 outhit_of_min_keylen =  smallest outhit among the bits at min_keylen == min_keylen_nz as defined above.
 Excluding any non-meaningful output bit by using out_hit information.
 */
-void calcStatistics_faultkeybits(llvm::NoCryptoFA::InstructionMetadata* md)
-{
-    int cnt,cnt_sub,cnt_kd,ohcnt=0;
-    md->faultable_stats.min_keylen_nz = MAX_PROTECTION;
-    assert(md->fault_keys.size() == md->out_hit.size());
-    assert(md->fault_keys_keydep.size() == md->out_hit.size());
-    for(unsigned long i = 0;i<md->fault_keys.size();i++) {
-        assert(md->fault_keys[i].size() == MAX_OUTBITS);
-        assert(md->fault_keys_keydep[i].size() == MAX_OUTBITS);
-        for(unsigned long j = 0, max=md->fault_keys[i].size();j<max;j++) {
-            if(md->out_hit[i][j] == 0) continue;
-            cnt_sub=md->fault_keys[i][j].count();
-            cnt_kd = md->fault_keys_keydep[i][j].count();
-            cnt = min(cnt_sub,cnt_kd);
-            if(cnt > 0){
-                if(md->faultable_stats.min_keylen_nz > cnt){
-                    md->faultable_stats.min_keylen_nz = cnt;
-                    md->faultable_stats.outhit_of_min_keylen_nz = md->out_hit[i];
-                    md->faultable_stats.hw_outhit_of_min_keylen_nz = md->out_hit[i].count();
-                }else if(md->faultable_stats.min_keylen_nz == cnt){
-                    ohcnt = md->out_hit[i].count();
-                    if(md->faultable_stats.hw_outhit_of_min_keylen_nz > ohcnt){
-                        md->faultable_stats.outhit_of_min_keylen_nz = md->out_hit[i];
-                        md->faultable_stats.hw_outhit_of_min_keylen_nz = ohcnt;
-                    }
-                }
-            }
-        }
-    }
 
-    if( md->faultable_stats.min_keylen_nz==MAX_PROTECTION) {md->faultable_stats.min_keylen_nz=0;md->faultable_stats.hw_outhit_of_min_keylen_nz = 0;}
-}
-void calcStatistics_faultkeybits_byte(llvm::NoCryptoFA::InstructionMetadata* md)
-{
-    int cnt,cnt_sub,cnt_kd,ohcnt=0;
-    md->faultable_stats_byte.min_keylen_nz = MAX_PROTECTION;
-    assert(md->fault_keys_byte.size() == md->out_hit_byte.size());
-    assert(md->fault_keys_keydep_byte.size() == md->out_hit_byte.size());
-    for(unsigned long i = 0;i<md->fault_keys_byte.size();i++) {
-        assert(md->fault_keys_byte[i].size() == MAX_OUTBITS);
-        assert(md->fault_keys_keydep_byte[i].size() == MAX_OUTBITS);
-        for(unsigned long j = 0, max=md->fault_keys_byte[i].size();j<max;j++) {
-            if(md->out_hit_byte[i][j] == 0) continue;
-            cnt_sub=md->fault_keys_byte[i][j].count();
-            cnt_kd = md->fault_keys_keydep_byte[i][j].count();
-            cnt = min(cnt_sub,cnt_kd);
-            if(cnt > 0){
-                if(md->faultable_stats_byte.min_keylen_nz > cnt){
-                    md->faultable_stats_byte.min_keylen_nz = cnt;
-                    md->faultable_stats_byte.outhit_of_min_keylen_nz = md->out_hit_byte[i];
-                    md->faultable_stats_byte.hw_outhit_of_min_keylen_nz = md->out_hit_byte[i].count();
-                }else if(md->faultable_stats_byte.min_keylen_nz == cnt){
-                    ohcnt = md->out_hit_byte[i].count();
-                    if(md->faultable_stats_byte.hw_outhit_of_min_keylen_nz > ohcnt){
-                        md->faultable_stats_byte.outhit_of_min_keylen_nz = md->out_hit_byte[i];
-                        md->faultable_stats_byte.hw_outhit_of_min_keylen_nz = ohcnt;
-                    }
-                }
-            }
-        }
-    }
 
-    if( md->faultable_stats_byte.min_keylen_nz==MAX_PROTECTION) {md->faultable_stats_byte.min_keylen_nz=0;md->faultable_stats_byte.hw_outhit_of_min_keylen_nz = 0;}
-}
-void calcStatistics_faultkeybits_word(llvm::NoCryptoFA::InstructionMetadata* md)
-{
-    int cnt,cnt_sub,cnt_kd,ohcnt=0;
-    md->faultable_stats_word.min_keylen_nz = MAX_PROTECTION;
-    assert(md->fault_keys_word.size() == md->out_hit_word.size());
-    assert(md->fault_keys_keydep_word.size() == md->out_hit_word.size());
-    for(unsigned long i = 0;i<md->fault_keys_word.size();i++) {
-        assert(md->fault_keys_word[i].size() == MAX_OUTBITS);
-        assert(md->fault_keys_keydep_word[i].size() == MAX_OUTBITS);
-        for(unsigned long j = 0, max=md->fault_keys_word[i].size();j<max;j++) {
-            if(md->out_hit_word[i][j] == 0) continue;
-            cnt_sub=md->fault_keys_word[i][j].count();
-            cnt_kd = md->fault_keys_keydep_word[i][j].count();
-            cnt = min(cnt_sub,cnt_kd);
-            if(cnt > 0){
-                if(md->faultable_stats_word.min_keylen_nz > cnt){
-                    md->faultable_stats_word.min_keylen_nz = cnt;
-                    md->faultable_stats_word.outhit_of_min_keylen_nz = md->out_hit_word[i];
-                    md->faultable_stats_word.hw_outhit_of_min_keylen_nz = md->out_hit_word[i].count();
-                }else if(md->faultable_stats_word.min_keylen_nz == cnt){
-                    ohcnt = md->out_hit_word[i].count();
-                    if(md->faultable_stats_word.hw_outhit_of_min_keylen_nz > ohcnt){
-                        md->faultable_stats_word.outhit_of_min_keylen_nz = md->out_hit_word[i];
-                        md->faultable_stats_word.hw_outhit_of_min_keylen_nz = ohcnt;
-                    }
-                }
-            }
-        }
-    }
-
-    if( md->faultable_stats_word.min_keylen_nz==MAX_PROTECTION) {md->faultable_stats_word.min_keylen_nz=0;md->faultable_stats_word.hw_outhit_of_min_keylen_nz = 0;}
-}
-void build_fault_data_byte(llvm::NoCryptoFA::InstructionMetadata* md){
-    md->out_hit_byte.resize(ceil(md->out_hit.size()/8.0f));
-    md->fault_keys_byte.resize(ceil(md->fault_keys.size()/8.0f));
-    bitset<MAX_OUTBITS> oh(0);
-    vector<bitset<MAX_KMBITS>> fk(MAX_OUTBITS,bitset<MAX_KMBITS>(0));
-    assert(md->fault_keys.size() == md->out_hit.size());
-    for(unsigned long i = 0;i<md->fault_keys.size();i++) {
-        oh |= md->out_hit[i];
-        for(unsigned long j = 0, max=md->fault_keys[i].size();j<max;j++) {
-            fk[j] |= md->fault_keys[i][j];
-        }
-        if(i%8==7 || i == (md->fault_keys.size()-1)){
-            md->out_hit_byte[i/8] = oh; //deep copy
-            md->fault_keys_byte[i/8] = fk; //deep copy
-            oh.reset();
-            for(unsigned long j = 0, max=fk.size();j<max;j++) {
-                fk[i].reset();
-            }
-        }
-    }
-}
-void build_fault_data_word(llvm::NoCryptoFA::InstructionMetadata* md){
-    md->out_hit_word.resize(ceil(md->out_hit.size()/32.0f));
-    md->fault_keys_word.resize(ceil(md->fault_keys.size()/32.0f));
-    bitset<MAX_OUTBITS> oh(0);
-    vector<bitset<MAX_KMBITS>> fk(MAX_OUTBITS,bitset<MAX_KMBITS>(0));
-    assert(md->fault_keys.size() == md->out_hit.size());
-    for(unsigned long i = 0;i<md->fault_keys.size();i++) {
-        oh |= md->out_hit[i];
-        for(unsigned long j = 0, max=md->fault_keys[i].size();j<max;j++) {
-            fk[j] |= md->fault_keys[i][j];
-        }
-        if(i%32==31 || i == (md->fault_keys.size()-1)){
-            md->out_hit_word[i/32] = oh; //deep copy
-            md->fault_keys_word[i/32] = fk; //deep copy
-            oh.reset();
-            for(unsigned long j = 0, max=fk.size();j<max;j++) {
-                fk[i].reset();
-            }
-        }
-    }
-}
 CalcDFG* llvm::createCalcDFGPass()
 {
     return new CalcDFG();
@@ -348,249 +212,241 @@ bool operator()(const bitset<N> &B1, const bitset<N> &B2) const {
 bool CalcDFG::runOnFunction(llvm::Function& Fun)
 {
 	keyLatestPos = 0;
-    cipherOutPoints.clear();
-    candidateVulnerablePointsPT.clear();
-    candidateVulnerablePointsCT.clear();
-    allKeyMaterial.clear();
+	cipherOutPoints.clear();
+	candidateVulnerablePointsPT.clear();
+	candidateVulnerablePointsCT.clear();
+	allKeyMaterial.clear();
 	instr_bs.clear();
 	set<Instruction*> keyStarts;
-    llvm::TaggedData& td = getAnalysis<TaggedData>();
+	llvm::TaggedData& td = getAnalysis<TaggedData>();
 	if(alreadyTransformed.find(&Fun) != alreadyTransformed.end()) {return false;}
-    if(!td.functionMarked(&Fun)) {return false;}
-    errs() << "Starting CalcDFG analysis\n";
-    markedfunctions.insert(&Fun);
-	for(llvm::Function::iterator FI = Fun.begin(),
-	    FE = Fun.end();
-	    FI != FE;
-	    ++FI) {
-		for(llvm::BasicBlock::iterator I = FI->begin(),
-		    E = FI->end();
-		    I != E;
-		    ++I) {
-            NoCryptoFA::known[I]->reset();
+	if(!td.functionMarked(&Fun)) {return false;}
+	errs() << "Starting CalcDFG analysis\n";
+	markedfunctions.insert(&Fun);
+	for(llvm::Function::iterator FI = Fun.begin(),FE = Fun.end(); FI != FE; ++FI) {
+		for(llvm::BasicBlock::iterator I = FI->begin(),E = FI->end(); I != E; ++I) {
+			NoCryptoFA::known[I]->reset();
 			if(NoCryptoFA::known[I]->isAKeyStart) {
-                NoCryptoFA::known[I]->keydep_own = getOwnBitset(I);
+				NoCryptoFA::known[I]->keydep_own = getOwnBitset(I);
 				keyStarts.insert(I);
 				I->dump();
 			}
-            unsigned int size = getOperandSize(I);
-			if(NoCryptoFA::known[I]->isAKeyOperation) {
-                NoCryptoFA::known[I]->pre_keydep.resize(0);
-                NoCryptoFA::known[I]->post_keydep.resize(0);
-                NoCryptoFA::known[I]->fault_keys_keydep.resize(0);
-                NoCryptoFA::known[I]->fault_keys_keydep_byte.resize(0);
-                NoCryptoFA::known[I]->fault_keys_keydep_word.resize(0);
-                NoCryptoFA::known[I]->out_hit_word.resize(0);
-                NoCryptoFA::known[I]->out_hit_byte.resize(0);
-                //todo altri?
-                NoCryptoFA::known[I]->keydep.resize(size);
-				NoCryptoFA::known[I]->post.resize(size);
-                NoCryptoFA::known[I]->pre.resize(size);
-                NoCryptoFA::known[I]->out_hit.resize(size);
-                NoCryptoFA::known[I]->fault_keys.resize(size);
-                for(unsigned int i = 0; i < size; ++i) {
-                    NoCryptoFA::known[I]->keydep[i] = bitset<MAX_KEYBITS>(0);
-                    NoCryptoFA::known[I]->pre[i] = bitset<MAX_SUBBITS>(0);
-                    NoCryptoFA::known[I]->post[i] = bitset<MAX_SUBBITS>(0);
-                    NoCryptoFA::known[I]->out_hit[i] = bitset<MAX_OUTBITS>(0);
-                    NoCryptoFA::known[I]->fault_keys[i] = vector<bitset<MAX_KMBITS> >(MAX_OUTBITS,bitset<MAX_KMBITS>(0));
-				}
-                calcDeadBits(I);
+		unsigned int size = getOperandSize(I);
+		if(NoCryptoFA::known[I]->isAKeyOperation) {
+			NoCryptoFA::known[I]->pre_keydep.resize(0);
+			NoCryptoFA::known[I]->post_keydep.resize(0);
+			NoCryptoFA::known[I]->fault_keys_keydep.resize(0);
+			NoCryptoFA::known[I]->fault_keys_keydep_byte.resize(0);
+			NoCryptoFA::known[I]->fault_keys_keydep_word.resize(0);
+			NoCryptoFA::known[I]->out_hit_word.resize(0);
+			NoCryptoFA::known[I]->out_hit_byte.resize(0);
+			NoCryptoFA::known[I]->keydep.resize(size);
+			NoCryptoFA::known[I]->post.resize(size);
+			NoCryptoFA::known[I]->pre.resize(size);
+			NoCryptoFA::known[I]->out_hit.resize(size);
+			NoCryptoFA::known[I]->fault_keys.resize(size);
+
+			for(unsigned int i = 0; i < size; ++i) {
+			NoCryptoFA::known[I]->keydep[i] = bitset<MAX_KEYBITS>(0);
+			NoCryptoFA::known[I]->pre[i] = bitset<MAX_SUBBITS>(0);
+			NoCryptoFA::known[I]->post[i] = bitset<MAX_SUBBITS>(0);
+			NoCryptoFA::known[I]->out_hit[i] = bitset<MAX_OUTBITS>(0);
+			NoCryptoFA::known[I]->fault_keys[i] = vector<bitset<MAX_KMBITS> >(MAX_OUTBITS,bitset<MAX_KMBITS>(0));
 			}
-            NoCryptoFA::known[I]->LinearDeps.resize(size);
-            NoCryptoFA::known[I]->NonLinearDeps.resize(size);
+			calcDeadBits(I);
+			}
+		NoCryptoFA::known[I]->LinearDeps.resize(size);
+		NoCryptoFA::known[I]->NonLinearDeps.resize(size);
 		}
 	}
-    MSBEverSet=keyLatestPos;
-    runBatched(keyStarts, [this](Instruction * p,long batchn)->bool {searchCipherOutPoints(p); return false;});
-    runBatched(cipherOutPoints, [this](Instruction * p,long batchn)->bool {fillCiphertextHeight(p,batchn); return false;});
-    runBatched(keyStarts, [this](Instruction * p,long batchn)->bool {calcKeydep(p); return false;});
-    errs() << "User key prop done\n";
-    set<Instruction*> vulnerableTop;
-    set<Instruction*> vulnerableBottom;
-    list<pair<int,Instruction*> > sortedList;
-    sortedList.insert(sortedList.begin(),candidateVulnerablePointsPT.begin(),candidateVulnerablePointsPT.end());
+	MSBEverSet=keyLatestPos;
+	runBatched(keyStarts, [this](Instruction * p,long batchn)->bool {searchCipherOutPoints(p); return false;});
+	runBatched(cipherOutPoints, [this](Instruction * p,long batchn)->bool {fillCiphertextHeight(p,batchn); return false;});
+	runBatched(keyStarts, [this](Instruction * p,long batchn)->bool {calcKeydep(p); return false;});
+	errs() << "User key prop done\n";
+	set<Instruction*> vulnerableTop;
+	set<Instruction*> vulnerableBottom;
+	list<pair<int,Instruction*> > sortedList;
+	sortedList.insert(sortedList.begin(),candidateVulnerablePointsPT.begin(),candidateVulnerablePointsPT.end());
     /*for(auto p: sortedList){
-        errs() << "SortedList: " << p.first << " - " << *(p.second) << "\n";
+       errs() << "SortedList: " << p.first << " - " << *(p.second) << "\n";
     }*/
-    lookForMostVulnerableInstructionRepresentingTheEntireUserKey(sortedList,&vulnerableTop,&NoCryptoFA::InstructionMetadata::isVulnerableTopSubKey);
+	lookForMostVulnerableInstructionRepresentingTheEntireUserKey(sortedList,&vulnerableTop,&NoCryptoFA::InstructionMetadata::isVulnerableTopSubKey);
     /*for(auto p: vulnerableTop){
         errs() << "vulnerableTop: riga "<< p->getDebugLoc().getLine() << *p << "\n";
     }*/
-    sortedList.clear();
-    sortedList.insert(sortedList.begin(),candidateVulnerablePointsCT.begin(),candidateVulnerablePointsCT.end());
-    lookForMostVulnerableInstructionRepresentingTheEntireUserKey(sortedList,&vulnerableBottom,&NoCryptoFA::InstructionMetadata::isVulnerableBottomSubKey);
+	sortedList.clear();
+	sortedList.insert(sortedList.begin(),candidateVulnerablePointsCT.begin(),candidateVulnerablePointsCT.end());
+	lookForMostVulnerableInstructionRepresentingTheEntireUserKey(sortedList,&vulnerableBottom,&NoCryptoFA::InstructionMetadata::isVulnerableBottomSubKey);
     /*for(auto p: vulnerableBottom){
         errs() << "vulnerableBottom: riga "<< p->getDebugLoc().getLine() << *p << "\n";
     }*/
-    cerr << "There were " << candidateVulnerablePointsPT.size() << " possibly vulnerable subkeys. T " << vulnerableTop.size() << " B " << vulnerableBottom.size() << " \n";
-    vector<bitset<MAX_KEYBITS> > pre_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableTop,&NoCryptoFA::InstructionMetadata::pre_own,&MSBEverSet,"vuln_top");
-    vector<bitset<MAX_KEYBITS> > post_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableBottom,&NoCryptoFA::InstructionMetadata::post_own,&MSBEverSet,"vuln_bottom");
-    MSBEverSet_Fault=0;
-    vector<bitset<MAX_KEYBITS> > fault_subkeytokey = assignKeyOwn<MAX_KMBITS>(allKeyMaterial,&NoCryptoFA::InstructionMetadata::fullsubkey_own,&MSBEverSet_Fault,"subkey");
-    errs() << "most vuln subkeys found\n";
-    runBatched(vulnerableTop, [this](Instruction * p,long batchn)->bool {calcPre(p);return false;});
-    set<Instruction*> firstVulnerableUses = set<Instruction*>();
-    for(Instruction * p : vulnerableBottom) {
-            for(auto u = p->use_begin(); u != p->use_end(); ++u) {
-                Instruction* Inst = dyn_cast<Instruction>(*u);
-                firstVulnerableUses.insert(Inst);
-            }
-        }
-    errs() << "PRE-subkeys prop done\n";
-    runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcPost(p);return false;});
-    errs() << "POST-subkeys prop done\n";
+	cerr << "There were " << candidateVulnerablePointsPT.size() << " possibly vulnerable subkeys. T " << vulnerableTop.size() << " B " << vulnerableBottom.size() << " \n";
+	vector<bitset<MAX_KEYBITS> > pre_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableTop,&NoCryptoFA::InstructionMetadata::pre_own,&MSBEverSet,"vuln_top");
+	vector<bitset<MAX_KEYBITS> > post_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableBottom,&NoCryptoFA::InstructionMetadata::post_own,&MSBEverSet,"vuln_bottom");
+	MSBEverSet_Fault=0;
+	vector<bitset<MAX_KEYBITS> > fault_subkeytokey = assignKeyOwn<MAX_KMBITS>(allKeyMaterial,&NoCryptoFA::InstructionMetadata::fullsubkey_own,&MSBEverSet_Fault,"subkey");
+	errs() << "most vuln subkeys found\n";
+	runBatched(vulnerableTop, [this](Instruction * p,long batchn)->bool {calcPre(p);return false;});
+	set<Instruction*> firstVulnerableUses = set<Instruction*>();
+	for(Instruction * p : vulnerableBottom) {
+		for(auto u = p->use_begin(); u != p->use_end(); ++u) {
+			Instruction* Inst = dyn_cast<Instruction>(*u);
+			firstVulnerableUses.insert(Inst);
+		}
+	}
+	errs() << "PRE-subkeys prop done\n";
+	runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcPost(p);return false;});
+	errs() << "POST-subkeys prop done\n";
     /*
        If doing it right with pointers to member as parameter of functions called inside the lambda function leads to:
        => 0x00007ffff6c00df9 <+57>:    ud2
        (yes,that's the output of gdb disass after a segfault)
        then allow me a copy&paste. I'm the first one that hates to do it.
     */
-    runBatched(keyStarts, [pre_subkeytokey,this](Instruction * p,long batchn)->bool {
-            llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
-            if(md->pre_keydep.size() > 0){return false;}
-            md->pre_keydep.resize(md->pre.size());
-            for(unsigned long i =0;i< md->pre.size();i++){
-                bitset<MAX_KEYBITS> kb=0;
-                for(unsigned long j =0;j< MAX_SUBBITS;j++){
-                    if(md->pre[i][j]){
-                        kb |= pre_subkeytokey[j];
-                    }
-                }
-                md->pre_keydep[i] = kb;
-            }
-            for(llvm::Instruction::use_iterator it = p->use_begin(); it != p->use_end(); ++it) {
-                if(Instruction* _it = dyn_cast<Instruction>(*it)) {
-                    toBeVisited.insert(_it);
-                }
-            }
+	runBatched(keyStarts, [pre_subkeytokey,this](Instruction * p,long batchn)->bool {
+		llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
+		if(md->pre_keydep.size() > 0){return false;}
+		md->pre_keydep.resize(md->pre.size());
+		for(unsigned long i =0;i< md->pre.size();i++){
+			bitset<MAX_KEYBITS> kb=0;
+			for(unsigned long j =0;j< MAX_SUBBITS;j++){
+				if(md->pre[i][j]){
+				kb |= pre_subkeytokey[j];
+				}
+			}
+			md->pre_keydep[i] = kb;
+		}
 
-            return false;
-        });
-    runBatched(keyStarts, [post_subkeytokey,this](Instruction * p,long batchn)->bool {
-            llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
-            if(md->post_keydep.size() > 0){return false;}
-            md->post_keydep.resize(md->post.size());
-            for(unsigned long i =0;i< md->post.size();i++){
-                bitset<MAX_KEYBITS> kb=0;
-                for(unsigned long j =0;j< MAX_SUBBITS;j++){
-                    if(md->post[i][j]){
-                        kb |= post_subkeytokey[j];
-                    }
-                }
-                md->post_keydep[i] = kb;
-            }
-            for(llvm::Instruction::use_iterator it = p->use_begin(); it != p->use_end(); ++it) {
-                if(Instruction* _it = dyn_cast<Instruction>(*it)) {
-                    toBeVisited.insert(_it);
-                }
-            }
-            return false;
-        });
-    errs() << "subkeys to keys calc done\n";
+		for(llvm::Instruction::use_iterator it = p->use_begin(); it != p->use_end(); ++it) {
+			if(Instruction* _it = dyn_cast<Instruction>(*it)) {
+			toBeVisited.insert(_it);
+			}
+		}
+	return false;
+	});
 
+	runBatched(keyStarts, [post_subkeytokey,this](Instruction * p,long batchn)->bool {
+		llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
+		if(md->post_keydep.size() > 0){return false;}
+		md->post_keydep.resize(md->post.size());
+		for(unsigned long i =0;i< md->post.size();i++){
+			bitset<MAX_KEYBITS> kb=0;
+			for(unsigned long j =0;j< MAX_SUBBITS;j++){
+				if(md->post[i][j]){
+				kb |= post_subkeytokey[j];
+				}
+			}
+			md->post_keydep[i] = kb;
+		}
 
-    unsigned int lp=0;
-    set<Instruction*> cipherOutValues;
-    for( Instruction* co :cipherOutPoints){
-        StoreInst* si = dyn_cast<StoreInst>(co);
-        if(si==NULL){
-            errs() << co << " IS NOT A STORE BUT IS A CIPHEROUTPOINT. SKIPPING!\n";
-            continue;
-        }
-        cipherOutValues.insert(dyn_cast<Instruction>(si->getValueOperand()));
-    }
+		for(llvm::Instruction::use_iterator it = p->use_begin(); it != p->use_end(); ++it) {
+			if(Instruction* _it = dyn_cast<Instruction>(*it)) {
+				toBeVisited.insert(_it);
+			}
+		}
+	return false;
+	});
+
+	errs() << "subkeys to keys calc done\n";
+	unsigned int lp=0;
+	set<Instruction*> cipherOutValues;
+	for( Instruction* co :cipherOutPoints){
+		StoreInst* si = dyn_cast<StoreInst>(co);
+		if(si==NULL){
+			errs() << co << " IS NOT A STORE BUT IS A CIPHEROUTPOINT. SKIPPING!\n";
+			continue;
+		}
+		cipherOutValues.insert(dyn_cast<Instruction>(si->getValueOperand()));
+	}
      //Assegniamo gli out_hit ai primi
-    for( Instruction* co :cipherOutValues){
-        llvm::NoCryptoFA::InstructionMetadata*md = getMD(co);
-        md->out_hit_own = getOutBitset<MAX_OUTBITS>(co,lp,"out_hits");
-    }
-    runBatched(cipherOutValues, [this](Instruction * p,long batchn)->bool { calcOuthit(p); return false;});
-    errs() << "outhit calc done\n";
+	for( Instruction* co :cipherOutValues){
+		llvm::NoCryptoFA::InstructionMetadata*md = getMD(co);
+		md->out_hit_own = getOutBitset<MAX_OUTBITS>(co,lp,"out_hits");
+	}
+	runBatched(cipherOutValues, [this](Instruction * p,long batchn)->bool { calcOuthit(p); return false;});
+	errs() << "outhit calc done\n";
+	errs() << "PORCO INIT\n";
+	runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcFAKeyBackProp(p);return false;});
+	std::map<std::bitset<MAX_OUTBITS>, unsigned > EquivocationMap; 
+	runBatched(firstVulnerableUses, [&EquivocationMap, this](Instruction *p, long batchn)->bool {
+	UnpackedInstMD md(p);
+	if (md->EquivocationCount.size() > 0)
+		return false;
+	md->EquivocationCount.resize(md->out_hit.size());
+	md->EquivocationCountSet = false;
 
+	for (const std::bitset<MAX_OUTBITS> &o : md->out_hit)
+		++EquivocationMap[o];
 
-    errs() << "PORCO INIT\n";
-    runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcFAKeyBackProp(p);return false;});
+	for (auto I = p->op_begin(), E = p->op_end(); I != E; ++I)
+		if (Instruction *Instr = dyn_cast<Instruction>(*I))
+			toBeVisited.insert(Instr);
 
+	return false;
+	});
 
-    std::map<std::bitset<MAX_OUTBITS>, unsigned > EquivocationMap; 
-    runBatched(firstVulnerableUses, [&EquivocationMap, this](Instruction *p, long batchn)->bool {
-      UnpackedInstMD md(p, PackMask(UNPACK_OH));
+	runBatched(firstVulnerableUses, [&EquivocationMap, this](Instruction *p, long batchn)->bool {
+		UnpackedInstMD md(p);
+		if (md->EquivocationCountSet) return false;
 
-      if (md->EquivocationCount.size() > 0)
-        return false;
-
-      md->EquivocationCount.resize(md->out_hit.size());
-	  md->EquivocationCountSet = false;
-
-      for (const std::bitset<MAX_OUTBITS> &o : md->out_hit)
-        ++EquivocationMap[o];
-
-      for (auto I = p->op_begin(), E = p->op_end(); I != E; ++I)
-        if (Instruction *Instr = dyn_cast<Instruction>(*I))
-          toBeVisited.insert(Instr);
-      return false;
-    });
-
-    runBatched(firstVulnerableUses, [&EquivocationMap, this](Instruction *p, long batchn)->bool {
-      UnpackedInstMD md(p, PackMask(UNPACK_OH));
-
-	  if (md->EquivocationCountSet) return false;
-
-      for (unsigned i = 0, e = md->out_hit.size(); i != e; ++i)
-        md->EquivocationCount[i] = EquivocationMap[md->out_hit[i]];
+		for (unsigned i = 0, e = md->out_hit.size(); i != e; ++i)
+			md->EquivocationCount[i] = EquivocationMap[md->out_hit[i]];
 
 	md->EquivocationCountSet = true;
-      for (auto I = p->op_begin(), E = p->op_end(); I != E; ++I)
-        if (Instruction *Instr = dyn_cast<Instruction>(*I))
-         toBeVisited.insert(Instr);
-      return false;
-    });
 
+	for (auto I = p->op_begin(), E = p->op_end(); I != E; ++I)
+		if (Instruction *Instr = dyn_cast<Instruction>(*I))
+			toBeVisited.insert(Instr);
 
-    runBatched(keyStarts /*cipherOutValues*/, [post_subkeytokey,this](Instruction * p,long batchn)->bool {
-            llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
-            if(md->NonLinearKeyDeps.size() > 0){return false;}
-            md->LinearKeyDeps.resize(md->LinearDeps.size());
-            md->NonLinearKeyDeps.resize(md->NonLinearDeps.size());
-            for(unsigned long i =0;i< md->LinearDeps.size();i++){
-                std::bitset<MAX_KEYBITS> &Col = md->LinearKeyDeps[i];
-                for(unsigned long j =0;j< MAX_SUBBITS;j++){
-                    if(md->LinearDeps[i][j]) {
-                        Col |= post_subkeytokey[j];
-                    }
-                }
-            }
-            for(unsigned long i =0;i< md->NonLinearDeps.size();i++){
-                std::bitset<MAX_KEYBITS> &Col = md->NonLinearKeyDeps[i];
-                for(unsigned long j =0;j< MAX_SUBBITS;j++){
-                    if(md->NonLinearDeps[i][j]) {
-                        Col |= post_subkeytokey[j];
-                    }
-                }
-            }
-            calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->NonLinStats, md->NonLinearDeps,md->NonLinearKeyDeps);
-            for(llvm::Instruction::use_iterator it = p->use_begin(); it != p->use_end(); ++it) {
-                if(Instruction* _it = dyn_cast<Instruction>(*it)) {
-                    toBeVisited.insert(_it);
-                }
-            }
-            return false;
-        });
+	return false;
+	});
 
-    errs() << "PORCO END" << __cnt << "\n";
+	runBatched(keyStarts /*cipherOutValues*/, [post_subkeytokey,this](Instruction * p,long batchn)->bool {
+		llvm::NoCryptoFA::InstructionMetadata*md = getMD(p);
+		if(md->NonLinearKeyDeps.size() > 0){return false;}
+		md->LinearKeyDeps.resize(md->LinearDeps.size());
+		md->NonLinearKeyDeps.resize(md->NonLinearDeps.size());
+		for(unsigned long i =0;i< md->LinearDeps.size();i++){
+			std::bitset<MAX_KEYBITS> &Col = md->LinearKeyDeps[i];
+			for(unsigned long j =0;j< MAX_SUBBITS;j++){
+				if(md->LinearDeps[i][j]) {
+					Col |= post_subkeytokey[j];
+				}
+			}
+		}
 
-    runBatched(vulnerableTop, [this](Instruction * p,long batchn)->bool {checkPre_masking(p);return false;});
-    runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {checkPost_masking(p);return false;});
-    errs() << "calc pre/post masking needs done\n";
+		for(unsigned long i =0;i< md->NonLinearDeps.size();i++){
+			std::bitset<MAX_KEYBITS> &Col = md->NonLinearKeyDeps[i];
+			for(unsigned long j =0;j< MAX_SUBBITS;j++){
+				if(md->NonLinearDeps[i][j]) {
+					Col |= post_subkeytokey[j];
+				}
+			}
+		}
+
+		calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->NonLinStats, md->NonLinearDeps,md->NonLinearKeyDeps);
+		for(llvm::Instruction::use_iterator it = p->use_begin(); it != p->use_end(); ++it) {
+			if(Instruction* _it = dyn_cast<Instruction>(*it)) {
+				toBeVisited.insert(_it);
+			}
+		}
+		return false;
+	});
+
+	errs() << "PORCO END" << __cnt << "\n";
+	runBatched(vulnerableTop, [this](Instruction * p,long batchn)->bool {checkPre_masking(p);return false;});
+	runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {checkPost_masking(p);return false;});
+	errs() << "calc pre/post masking needs done\n";
 	return false;
 }
+
 bitset<MAX_KEYBITS> massiveOR(std::vector<bitset<MAX_KEYBITS> >& input){
-    bitset<MAX_KEYBITS> max(0);
-    for(auto &v : input ){
-                max |= v;
-    }
-    return max;
+	bitset<MAX_KEYBITS> max(0);
+	for(auto &v : input ){
+		max |= v;
+	}
+	return max;
 }
 
 //TODO:spostare
@@ -675,7 +531,6 @@ void CalcDFG::lookForMostVulnerableInstructionRepresentingTheEntireUserKey(list<
         if(covered.count() == keyLatestPos) {break;} //If now we have covered all of the bits of the userkey, we are done.
         }
      md = getMD(it->second);
-     //123md->unpack(PackMask(UNPACK_KEYDEP));
      userkey_dep_full = massiveOR(md->keydep);
      //cerr << "Evaluating instruction that depends from " << userkey_dep_full.count() << " bits\n";
      newbits = userkey_dep_full & ~covered;
@@ -704,7 +559,6 @@ void CalcDFG::lookForMostVulnerableInstructionRepresentingTheEntireUserKey(list<
       md->*marker=true;
 
     }
-     //md->pack();
   } // End of foreach(Instruction v in sorted)
 
   doubts.clear();
@@ -876,8 +730,7 @@ void CalcDFG::calcFAKeyProp(Instruction* ptr)
 {
     NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
     if(!md->isAKeyOperation) {return;}
-    md->lock.lock();
-    //123md->unpack(PackMask(UNPACK_FAULT) | PackMask(UNPACK_OH) | PackMask(UNPACK_FAULT_KEYDEP));
+    md->lock.lock();;
     bool changed = false;
     vector<vector<bitset<MAX_KMBITS> > > oldFK = md->fault_keys; //This should be deep copy.
     for(vector<bitset<MAX_KMBITS> > &v: md->fault_keys)  ClearMatrix<MAX_KMBITS>(v);
@@ -907,11 +760,9 @@ void CalcDFG::calcFAKeyProp(Instruction* ptr)
             NoCryptoFA::InstructionMetadata* usemd = NoCryptoFA::known[_it];
             usemd->lock.lock(); // Deadlock is impossible: each  mutex couple is (instruction,use), the reverse would be (instruction,operand). And an istruction should never be the successor of itself.
                            // Possible with loops, but we avoid loops in this type of computation.
-            //123usemd->unpack(PackMask(UNPACK_FAULT) | PackMask(UNPACK_OH));
             fav.md = md;
             fav.usemd = usemd;
             fav.visit(_it);
-            //usemd->pack();
             usemd->lock.unlock();
         }
     }
@@ -920,7 +771,6 @@ void CalcDFG::calcFAKeyProp(Instruction* ptr)
         if(!areVectorOfBitsetEqual<MAX_KMBITS>(oldFK[i], md->fault_keys[i])) { changed = true; break;}
     }
     md->fault_keys_keydep.resize(0);
-    //md->pack();
     md->lock.unlock();
     if(changed || !md->fault_keys_calculated) {
         md->fault_keys_calculated=true;
@@ -937,7 +787,6 @@ void CalcDFG::calcOuthit(Instruction* ptr)
 {
     NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
     if(!md->isAKeyOperation) {return;}
-    //123md->unpack(PackMask(UNPACK_OH));
     bool changed = false;
     vector<bitset<MAX_OUTBITS> > oldOuthit = md->out_hit;
     ClearMatrix<MAX_OUTBITS>(md->out_hit);
@@ -948,16 +797,13 @@ void CalcDFG::calcOuthit(Instruction* ptr)
     for(llvm::Instruction::use_iterator it = ptr->use_begin(); it != ptr->use_end(); ++it) {
         if(Instruction* _it = dyn_cast<Instruction>(*it)) {
             NoCryptoFA::InstructionMetadata* usemd = NoCryptoFA::known[_it];
-            //123usemd->unpack(PackMask(UNPACK_OH));
             cbv.md = md;
             cbv.usemd = usemd;
             cbv.visit(_it);
-            //usemd->pack();
         }
     }
 
     if(!areVectorOfBitsetEqual<MAX_OUTBITS>(oldOuthit, md->out_hit)) { changed = true; }
-    //md->pack();
     if(changed) {
         for(llvm::Instruction::op_iterator it = ptr->op_begin(); it != ptr->op_end(); ++it) {
             if(Instruction* _it = dyn_cast<Instruction>(*it)) {
@@ -972,7 +818,6 @@ void CalcDFG::calcPost(Instruction* ptr)
 {
 	NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
 	if(!md->isAKeyOperation) {return;}
-    //md->unpack(PackMask(UNPACK_POST));
 	bool changed = false;
     vector<bitset<MAX_SUBBITS> > oldPost = md->post;
     ClearMatrix<MAX_SUBBITS>(md->post);
@@ -992,16 +837,13 @@ void CalcDFG::calcPost(Instruction* ptr)
 	for(llvm::Instruction::use_iterator it = ptr->use_begin(); it != ptr->use_end(); ++it) {
 		if(Instruction* _it = dyn_cast<Instruction>(*it)) {
 			NoCryptoFA::InstructionMetadata* usemd = NoCryptoFA::known[_it];
-            //usemd->unpack(PackMask(UNPACK_POST));
             cbv.md = md;
             cbv.usemd = usemd;
             cbv.visit(_it);
-            //usemd->pack();
 		}
 	}
 
     if(!areVectorOfBitsetEqual<MAX_SUBBITS>(oldPost, md->post)) { changed = true; }
-    //md->pack();
 	if(changed) {
 		for(llvm::Instruction::op_iterator it = ptr->op_begin(); it != ptr->op_end(); ++it) {
 			if(Instruction* _it = dyn_cast<Instruction>(*it)) {
@@ -1019,7 +861,6 @@ void CalcDFG::checkPost_masking(Instruction* ptr)
     bool oldProt = md->hasToBeProtected_post;
     if(!md->hasMetPlaintext) { md->hasToBeProtected_post = false;}
     else{
-        //123md->unpack(PackMask(UNPACK_POST)|PackMask(UNPACK_POST_KEYDEP));
         calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->post_stats, md->post,md->post_keydep);
         NeedsMaskPostVisitor nmpv;
         nmpv.visit(ptr);
@@ -1029,7 +870,6 @@ void CalcDFG::checkPost_masking(Instruction* ptr)
                 toBeVisited.insert(_it);
              }
          }
-        //md->pack();
     }
 }
 
@@ -1041,11 +881,9 @@ void CalcDFG::checkPre_masking(llvm::Instruction* ptr)
     bool oldProtected = md->hasToBeProtected_pre;
     if(!md->hasMetPlaintext) { md->hasToBeProtected_pre = false;}
     else{
-        //123md->unpack(PackMask(UNPACK_PRE)|PackMask(UNPACK_PRE_KEYDEP));
         calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->pre_stats, md->pre,md->pre_keydep);
         NeedsMaskPreVisitor nmpv;
         nmpv.visit(ptr);
-        //123md->pack();
     }
     if(md->hasToBeProtected_pre != oldProtected){changed=true;}
         if(!ptr->use_empty()) {
@@ -1061,15 +899,11 @@ void CalcDFG::calcPre(llvm::Instruction* ptr)
 {
     NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
     bool changed = false;
-    //123md->unpack(PackMask(UNPACK_PRE));
     vector<bitset<MAX_SUBBITS> > oldPre = md->pre;
     ClearMatrix<MAX_SUBBITS>(md->pre);
-    //md->pack();
-    CalcForwardVisitor<MAX_SUBBITS,&NoCryptoFA::InstructionMetadata::pre,&NoCryptoFA::InstructionMetadata::pre_own,PackMask(UNPACK_PRE)> cfv;
+    CalcForwardVisitor<MAX_SUBBITS,&NoCryptoFA::InstructionMetadata::pre,&NoCryptoFA::InstructionMetadata::pre_own> cfv;
     cfv.visit(ptr);
-    //123md->unpack(PackMask(UNPACK_PRE));
     if(!areVectorOfBitsetEqual<MAX_SUBBITS>(oldPre, md->pre)) { changed = true; }
-    //md->pack();
     if(changed || md->pre_own.any()) {
         if(!ptr->use_empty()) {
             for(llvm::Instruction::use_iterator it = ptr->use_begin(); it != ptr->use_end(); ++it) {
@@ -1095,14 +929,11 @@ void CalcDFG::searchCipherOutPoints(llvm::Instruction* ptr){
 void CalcDFG::calcKeydep(llvm::Instruction* ptr)
 {
 	NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
-    //123md->unpack(PackMask(UNPACK_KEYDEP));
 	bool changed = false;
     vector<bitset<MAX_KEYBITS> > oldKeydep = md->keydep;
     ClearMatrix<MAX_KEYBITS>(md->keydep);
-    CalcForwardVisitor<MAX_KEYBITS,&NoCryptoFA::InstructionMetadata::keydep,&NoCryptoFA::InstructionMetadata::keydep_own,PackMask(UNPACK_KEYDEP)> cfv;
-    //md->pack();
+    CalcForwardVisitor<MAX_KEYBITS,&NoCryptoFA::InstructionMetadata::keydep,&NoCryptoFA::InstructionMetadata::keydep_own> cfv;
     cfv.visit(ptr);
-    //md->unpack(PackMask(UNPACK_KEYDEP));
     if(!areVectorOfBitsetEqual<MAX_KEYBITS>(oldKeydep, md->keydep)) { changed = true; }
     if(changed || md->keydep_own.any()) {
         calcStatistics<MAX_KEYBITS,MAX_KEYBITS>(md->keydep_stats, md->keydep,md->keydep);
@@ -1142,7 +973,6 @@ void CalcDFG::calcKeydep(llvm::Instruction* ptr)
 			}
 		}
 	}
-    //md->pack();
 }
 
 
@@ -1155,9 +985,6 @@ void CalcDFG::calcFAKeyBackProp(Instruction *ptr)
 {
 	NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
 	if(!md->isAKeyOperation) {return;}
-
-  //md->unpack(PackMask(UNPACK_LINEAR_DEPS) | PackMask(UNPACK_NON_LINEAR_DEPS));
-
 	bool changed = false;
   vector<bitset<MAX_SUBBITS> > OldLin = md->LinearDeps;
   vector<bitset<MAX_SUBBITS> > OldNonLin = md->NonLinearDeps;
@@ -1189,7 +1016,6 @@ void CalcDFG::calcFAKeyBackProp(Instruction *ptr)
        !areVectorOfBitsetEqual<MAX_SUBBITS>(OldNonLin, md->NonLinearDeps)) {
       changed = true;
     }
-    //md->pack();
 	if(changed) {
 		for(llvm::Instruction::op_iterator it = ptr->op_begin(); it != ptr->op_end(); ++it) {
 			if(Instruction* _it = dyn_cast<Instruction>(*it)) {
