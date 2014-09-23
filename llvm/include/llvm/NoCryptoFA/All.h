@@ -4,7 +4,6 @@
 #include "TaggedData.h"
 #include "CalcDFG.h"
 #include "DFGPrinter.h"
-
 namespace
 {
 	static struct NCFAForcePassLinking {

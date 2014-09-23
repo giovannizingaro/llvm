@@ -91,6 +91,7 @@ namespace llvm
             std::multimap<int,Instruction*> candidateVulnerablePointsCT;
             std::multimap<int,Instruction*> candidateVulnerablePointsPT;
             std::set<Instruction*> allKeyMaterial;
+	    bool init(llvm::Function& Fun);
             void runBatched(set<Instruction*> initialSet, std::function<bool(Instruction*,long batchn)> func );
             void runBatched_parallel(set<Instruction*> initialSet, std::function<void(Instruction*,long batchn,sem_t *ready)> func );
             void calcKeydep(llvm::Instruction* ptr);

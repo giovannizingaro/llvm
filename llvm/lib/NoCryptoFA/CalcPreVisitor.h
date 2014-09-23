@@ -1,5 +1,7 @@
 #include <llvm/InstVisitor.h>
 #include <llvm/NoCryptoFA/All.h>
+#include "Analysis.h"
+
 using namespace llvm;
 template<int MAXBITS,vector<bitset<MAXBITS> > NoCryptoFA::InstructionMetadata::*DATA,bitset<MAXBITS> NoCryptoFA::InstructionMetadata::*OWN>
 /*
