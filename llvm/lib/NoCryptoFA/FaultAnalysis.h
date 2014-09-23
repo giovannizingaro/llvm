@@ -87,8 +87,8 @@ FaultAnalysis(): Analysis() {}
 			}
 		}
 
-		calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->NonLinStats, md->NonLinearDeps,md->NonLinearKeyDeps);
-                calcStatisticsByte<MAX_SUBBITS,MAX_KEYBITS>(md->NonLinStatsByte, md->NonLinearDeps,md->NonLinearKeyDeps);
+		calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->NonLinStats, md->NonLinearDeps,md->NonLinearKeyDeps,1);
+                calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->NonLinStatsByte, md->NonLinearDeps,md->NonLinearKeyDeps,8);
 		for(llvm::Instruction::use_iterator it = p->use_begin(); it != p->use_end(); ++it) {
 			if(Instruction* _it = dyn_cast<Instruction>(*it)) {
 				toBeVisited.insert(_it);

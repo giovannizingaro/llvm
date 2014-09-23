@@ -78,7 +78,7 @@ void checkPre_masking(llvm::Instruction* ptr)
     bool oldProtected = md->hasToBeProtected_pre;
     if(!md->hasMetPlaintext) { md->hasToBeProtected_pre = false;}
     else{
-        calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->pre_stats, md->pre,md->pre_keydep);
+        calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->pre_stats, md->pre,md->pre_keydep,1);
         NeedsMaskPreVisitor nmpv;
         nmpv.visit(ptr);
     }

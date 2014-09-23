@@ -101,7 +101,7 @@ void calcPost(Instruction* ptr)
 	    bool oldProt = md->hasToBeProtected_post;
 	    if(!md->hasMetPlaintext) { md->hasToBeProtected_post = false;}
 	    else{
-		calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->post_stats, md->post,md->post_keydep);
+		calcStatistics<MAX_SUBBITS,MAX_KEYBITS>(md->post_stats, md->post,md->post_keydep,1);
 		NeedsMaskPostVisitor nmpv;
 		nmpv.visit(ptr);
 		if(oldProt != md->hasToBeProtected_post) { changed = true; }

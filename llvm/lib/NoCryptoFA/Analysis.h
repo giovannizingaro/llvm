@@ -336,7 +336,7 @@ static bool areVectorOfBitsetEqual(vector<bitset<BITNUM> >& vec1, vector<bitset<
 }
 
 template<int NUMBITS,int NUMBITS2>
-static void calcStatisticsByte(llvm::NoCryptoFA::StatisticInfo& stat, vector<bitset<NUMBITS> >& vect,vector<bitset<NUMBITS2> >& vect2)
+static void calcStatistics(llvm::NoCryptoFA::StatisticInfo& stat, vector<bitset<NUMBITS> >& vect,vector<bitset<NUMBITS2> >& vect2, int base)
 {
     int avgcnt = 0;
     int avgnzcnt = 0;
@@ -345,14 +345,16 @@ static void calcStatisticsByte(llvm::NoCryptoFA::StatisticInfo& stat, vector<bit
     stat.min_nonzero = MAX_PROTECTION;
     //std::cerr << "vect.size() == " << vect.size() << " vect2.size() == " << vect2.size() << std::endl;
     assert(vect.size() == vect2.size());
-if(vect.size()%8 != 0)
+	if(vect.size()%base != 0)
                 errs () << "Errore";
 
-    for(unsigned long i = 0;i<vect.size();i+=8) {
-	if(vect.size()%8 != 0)
-		errs () << "Errore";
-	bitset<NUMBITS> tmp1 = vect[i] | vect[i+1] | vect[i+2] | vect[i+3] | vect[i+4] | vect[i+5] | vect[i+6] | vect[i+7];
-        bitset<NUMBITS2> tmp2 = vect2[i] | vect2[i+1] | vect2[i+2] | vect2[i+3] | vect2[i+4] | vect2[i+5] | vect2[i+6] | vect2[i+7];
+    for(unsigned long i = 0;i<vect.size();i+=base) {
+	bitset<NUMBITS> tmp1;
+	bitset<NUMBITS2> tmp2;
+	for(int j=0;j<base;j++){
+		tmp1|=vect[i+j];
+		tmp2|=vect2[i+j];
+	}
 	cnt = std::min(tmp1.count(),tmp2.count());
 	//cnt = std::min(vect[i].count(),vect2[i].count());
         avgcnt++;
@@ -370,7 +372,7 @@ if(vect.size()%8 != 0)
     if(avgcnt > 0) { stat.avg = stat.avg / avgcnt; }
     if(avgnzcnt > 0) { stat.avg_nonzero = stat.avg_nonzero / avgnzcnt; }
 }
-
+/*
 template<int NUMBITS,int NUMBITS2>
 static void calcStatistics(llvm::NoCryptoFA::StatisticInfo& stat, vector<bitset<NUMBITS> >& vect,vector<bitset<NUMBITS2> >& vect2)
 {
@@ -397,7 +399,7 @@ static void calcStatistics(llvm::NoCryptoFA::StatisticInfo& stat, vector<bitset<
     if(avgcnt > 0) { stat.avg = stat.avg / avgcnt; }
     if(avgnzcnt > 0) { stat.avg_nonzero = stat.avg_nonzero / avgnzcnt; }
 }
-
+*/
 
 static void searchCipherOutPoints(llvm::Instruction* ptr){
     NoCryptoFA::InstructionMetadata* md = NoCryptoFA::known[ptr];
@@ -421,7 +423,7 @@ static void calcKeydep(llvm::Instruction* ptr)
     cfv.visit(ptr);
     if(!areVectorOfBitsetEqual<MAX_KEYBITS>(oldKeydep, md->keydep)) { changed = true; }
     if(changed || md->keydep_own.any()) {
-        calcStatistics<MAX_KEYBITS,MAX_KEYBITS>(md->keydep_stats, md->keydep,md->keydep);
+        calcStatistics<MAX_KEYBITS,MAX_KEYBITS>(md->keydep_stats, md->keydep,md->keydep,1);
 		if(!ptr->use_empty()) {
 			for(llvm::Instruction::use_iterator it = ptr->use_begin(); it != ptr->use_end(); ++it) {
 				if(Instruction* _it = dyn_cast<Instruction>(*it)) {
