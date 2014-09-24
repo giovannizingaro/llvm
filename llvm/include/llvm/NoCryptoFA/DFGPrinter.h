@@ -50,6 +50,7 @@ namespace llvm
             virtual void doCSV(Module& M);
             virtual void doHTML(Module& M);
             virtual void doDOT(Module& M);
+    	    virtual void doDAT(Module& M);
 		private:
             std::map<Instruction*, MyNodeType*> instrnodemap;
             MyNodeType* rootptr;

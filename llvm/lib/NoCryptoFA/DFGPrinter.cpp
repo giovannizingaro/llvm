@@ -34,7 +34,6 @@
                 output << "x y z";					\
                 for(int y = 0; y<rounds.size();y++)			\
                         for(int x =0; x<max; x++){			\
-				errs () << x;				\
 				if(x < rounds.at(y).type.size())	\
                                 	output << "\n" << x << " " << y << " " <<  rounds.at(y).type.at(x);\
 				else					\
@@ -51,13 +50,13 @@ RigheCifrario("righe-cifrario", cl::init(""), cl::ValueRequired,
                cl::desc("Passare il file righe cifrario"));
 //fine aggiunto
 static cl::opt<bool>
-PrintDot("print-dot", cl::init(true), cl::ValueOptional,
+PrintDot("print-dot", cl::init(false), cl::ValueOptional,
                cl::desc("Print DOT file on stdout"));
 static cl::opt<bool>
-PrintCSV("print-csv", cl::init(true), cl::ValueOptional,
+PrintCSV("print-csv", cl::init(false), cl::ValueOptional,
                cl::desc("Print CSV file on out.dir/function_name.csv"));
 static cl::opt<bool>
-PrintHTML("print-html", cl::init(true), cl::ValueOptional,
+PrintHTML("print-html", cl::init(false), cl::ValueOptional,
                cl::desc("Print an html file for each node of dot file in outdir/nodename.html"));
 
 MyNodeType* MyNodeType::rootnode = NULL;
@@ -345,7 +344,7 @@ AN& DFGPrinter::my_getAnalysis(Function* f){
 }
 
 
-void DFGPrinter::doCSV(Module& M){
+void DFGPrinter::doDAT(Module& M){
 	//aggiunto
 	typedef struct Round{
         int begin;
@@ -369,29 +368,17 @@ void DFGPrinter::doCSV(Module& M){
 	rounds.push_back(round);
     	//errs () << "IN:" << a << "FIN:" << b;
 	}
-	errs () << "Sono stati trovati " << rounds.size() << ".";
+	//errs () << "Sono stati trovati " << rounds.size() << ".";
 //Fine
 
-    errs() << "Starting CSV output\n";
+    errs() << "Starting DAT output\n";
     for(llvm::Module::iterator F = M.begin(), ME = M.end(); F != ME; ++F) {
         for(llvm::Function::iterator BB = F->begin(),
             FE = F->end();
             BB != FE;
             ++BB) {
             CalcDFG& cd = my_getAnalysis<CalcDFG>(F);
-            string instr_dump_str = string();
-            instr_dump_str.reserve(200*1024*1024); //200M, yes, I hate having to re-alloc something. Even if it is transparent to the developer. I need to use those 16GB of RAM.
 
-            llvm::raw_string_ostream instr_dump(instr_dump_str);
-            instr_dump << "Pre_Max;Pre_Min;Pre_MinNZ;Pre_Avg;Pre_AvgNZ;";
-            instr_dump << "Post_Max;Post_Min;Post_MinNZ;Post_Avg;Post_AvgNZ;";
-            instr_dump << "Min_MinNZ;Plaintext;PTHeight;CTHeight;ToBeProtected_pre;ToBeProtected_post;ToBeProtected;SourceLine;SourceColumn;";
-            // parte per output dettagliato
-            instr_dump << "IsAKeyOp;IsAKeyStart;PreKeyStart;SubKey;PostKeyStart;Sbox;post_FirstToMeetKey;HasBeenMasked;Origin;ValueSize;keydep_own.count;";
-            instr_dump << "KD_Max;KD_Min;KD_MinNZ;KD_Avg;KD_AvgNZ;FK_min;FOH_of_fk_min;BYTE_FK_min;BYTE_FOH_of_fk_min;WORD_FK_min;WORD_FOH_of_fk_min";
-            instr_dump << "pre;pre_own;post;post_own;";
-            // fine parte per output dettagliato
-            instr_dump << "\"Full instruction\"\n";
             if(!cd.functionMarked(&(*F))) { continue; }
             for( llvm::BasicBlock::iterator i = BB->begin(); i != BB->end(); i++) {
                 if(isa<llvm::DbgInfoIntrinsic>(i)) {continue;}
@@ -429,9 +416,51 @@ void DFGPrinter::doCSV(Module& M){
 
 		}//fine for
 
+            }
 
+		int max=0;
+		for(std::vector<Round>::iterator r=rounds.begin(); r!=rounds.end(); ++r){
+		if(r->forward.size()>max)
+			max = r->forward.size();
+		}
+		//errs () << "Il massimo è:" << max;
 
-		//fine
+		PRINT(rounds,forward,max);
+		PRINT(rounds,backward,max);
+		PRINT(rounds,prot_dpa,max);
+		PRINT(rounds,nonlinbit,max);
+		PRINT(rounds,nonlinbyte,max);
+        }
+    }
+
+}
+
+void DFGPrinter::doCSV(Module& M){
+	
+    errs() << "Starting CSV output\n";
+    for(llvm::Module::iterator F = M.begin(), ME = M.end(); F != ME; ++F) {
+        for(llvm::Function::iterator BB = F->begin(),
+            FE = F->end();
+            BB != FE;
+            ++BB) {
+            CalcDFG& cd = my_getAnalysis<CalcDFG>(F);
+            string instr_dump_str = string();
+            instr_dump_str.reserve(200*1024*1024); //200M, yes, I hate having to re-alloc something. Even if it is transparent to the developer. I need to use those 16GB of RAM.
+
+            llvm::raw_string_ostream instr_dump(instr_dump_str);
+            instr_dump << "Pre_Max;Pre_Min;Pre_MinNZ;Pre_Avg;Pre_AvgNZ;";
+            instr_dump << "Post_Max;Post_Min;Post_MinNZ;Post_Avg;Post_AvgNZ;";
+            instr_dump << "Min_MinNZ;Plaintext;PTHeight;CTHeight;ToBeProtected_pre;ToBeProtected_post;ToBeProtected;SourceLine;SourceColumn;";
+            // parte per output dettagliato
+            instr_dump << "IsAKeyOp;IsAKeyStart;PreKeyStart;SubKey;PostKeyStart;Sbox;post_FirstToMeetKey;HasBeenMasked;Origin;ValueSize;keydep_own.count;";
+            instr_dump << "KD_Max;KD_Min;KD_MinNZ;KD_Avg;KD_AvgNZ;FK_min;FOH_of_fk_min;BYTE_FK_min;BYTE_FOH_of_fk_min;WORD_FK_min;WORD_FOH_of_fk_min";
+            instr_dump << "pre;pre_own;post;post_own;";
+            // fine parte per output dettagliato
+            instr_dump << "\"Full instruction\"\n";
+            if(!cd.functionMarked(&(*F))) { continue; }
+            for( llvm::BasicBlock::iterator i = BB->begin(); i != BB->end(); i++) {
+                if(isa<llvm::DbgInfoIntrinsic>(i)) {continue;}
+                llvm::NoCryptoFA::InstructionMetadata* md = cd.getMD(i);
 		//Output Forward
                 instr_dump << md->pre_stats.max << ";";
                 instr_dump << md->pre_stats.min << ";";
@@ -505,24 +534,12 @@ void DFGPrinter::doCSV(Module& M){
                 instr_dump << "\"" << md->getAsString() << "\"\n";
             }
             outFile(F->getName().str().append(".csv"), instr_dump.str());
-
-		//aggiunto
-		int max=0;
-		for(std::vector<Round>::iterator r=rounds.begin(); r!=rounds.end(); ++r){
-		if(r->forward.size()>max)
-			max = r->forward.size();
-		}
-		errs () << "Il massimo è:" << max;
-
-		PRINT(rounds,forward,max);
-		PRINT(rounds,backward,max);
-		PRINT(rounds,prot_dpa,max);
-		PRINT(rounds,nonlinbit,max);
-		PRINT(rounds,nonlinbyte,max);
         }
     }
 
 }
+
+
 sem_t html_sem;
 bool doHTML_instruction(Instruction* i, CalcDFG* cd){
     sem_wait(&html_sem);
@@ -740,6 +757,7 @@ bool DFGPrinter::runOnModule(llvm::Module& M){
     if(PrintDot) doDOT(M);
     if(PrintHTML) doHTML(M);
     if(PrintCSV) doCSV(M);
+    doDAT(M);
     return false;
 }
 
