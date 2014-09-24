@@ -63,6 +63,9 @@ public:
 
   enum AttrKind {
     // IR-Level Attributes
+    //Aggiunto DFA
+    MaskedCopy,		   ///< Generate a fully masked copy of the function
+    //Fine aggiunto
     None,                  ///< No attributes have been set
     Alignment,             ///< Alignment of parameter (5 bits)
                            ///< stored as log2 of alignment with +1 bias

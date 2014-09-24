@@ -242,6 +242,13 @@ std::string Attribute::getAsString(bool InAttrGrp) const {
     return Result;
   }
 
+//Aggiunto DFA
+  if (hasAttribute(Attribute::MaskedCopy)){
+    std::string Result;
+    Result += "maskedcopy ";
+  }
+//Fine aggiunto
+
   if (hasAttribute(Attribute::StackAlignment)) {
     std::string Result;
     Result += "alignstack";
@@ -349,7 +356,7 @@ uint64_t AttributeImpl::getAttrMask(Attribute::AttrKind Val) {
   switch (Val) {
   case Attribute::EndAttrKinds:
     llvm_unreachable("Synthetic enumerators which should never get here");
-
+  
   case Attribute::None:            return 0;
   case Attribute::ZExt:            return 1 << 0;
   case Attribute::SExt:            return 1 << 1;
@@ -388,6 +395,9 @@ uint64_t AttributeImpl::getAttrMask(Attribute::AttrKind Val) {
   case Attribute::Cold:            return 1ULL << 40;
   case Attribute::Builtin:         return 1ULL << 41;
   case Attribute::OptimizeNone:    return 1ULL << 42;
+//Aggiunto DFA
+  case Attribute::MaskedCopy:     return 1ULL << 43;
+//Fine aggiunto
   }
   llvm_unreachable("Unsupported attribute type");
 }

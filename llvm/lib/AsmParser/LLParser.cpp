@@ -1155,6 +1155,9 @@ bool LLParser::ParseOptionalParamAttrs(AttrBuilder &B) {
       B.addAlignmentAttr(Alignment);
       continue;
     }
+//Aggiunto DFA
+    case lltok::kw_maskedcopy: B.addAttribute(Attribute::MaskedCopy); break;
+//Fine aggiunto DFA
     case lltok::kw_byval:           B.addAttribute(Attribute::ByVal); break;
     case lltok::kw_inreg:           B.addAttribute(Attribute::InReg); break;
     case lltok::kw_nest:            B.addAttribute(Attribute::Nest); break;

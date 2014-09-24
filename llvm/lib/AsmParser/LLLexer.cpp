@@ -476,6 +476,9 @@ lltok::Kind LLLexer::LexIdentifier() {
   KEYWORD(global);  KEYWORD(constant);
 
   KEYWORD(private);
+//Aggiunto DFA
+  KEYWORD(maskedcopy);
+//Fine aggiunto
   KEYWORD(linker_private);
   KEYWORD(linker_private_weak);
   KEYWORD(internal);

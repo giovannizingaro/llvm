@@ -31,7 +31,9 @@ namespace lltok {
     backslash,         // \    (not /)
     exclaim,           // !
     hash,              // #
-
+//Aggiunto DFA
+    kw_maskedcopy,
+//Fine
     kw_x,
     kw_true,    kw_false,
     kw_declare, kw_define,
