@@ -4610,12 +4610,14 @@ static void handleKey(Sema &S, Decl *d, const AttributeList &Attr){
         }
         d->addAttr(::new (S.Context) KeyAttr(Attr.getRange(),S.Context));
 }
-static void handleSBox(Sema &S, Decl *d, const AttributeList &Attr) {
-  if (!isa<VarDecl>(d)) {
+
+static void handleSBoxAttr(Sema &S, Decl *D, const AttributeList &Attr) {
+  if (!isa<VarDecl>(D) || !cast<VarDecl>(D)->hasGlobalStorage()) {
     S.Diag(Attr.getLoc(), diag::warn_attribute_ignored) << Attr.getName();
     return;
   }
-        d->addAttr(::new (S.Context) SBoxAttr(Attr.getRange(),S.Context));
+
+  D->addAttr(::new (S.Context) SBoxAttr(Attr.getRange(), S.Context,  Attr.getAttributeSpellingListIndex()));
 }
 
 static void handleMaskedCopyAttr(Sema &S, Decl *D, const AttributeList &Attr) {
@@ -4661,7 +4663,7 @@ static void ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D,
 // Aggiunto DFA
   case AttributeList::AT_Key:         handleKey(S,D, Attr); break;
   case AttributeList::AT_Plain:       handlePlain(S,D, Attr); break;
-  case AttributeList::AT_SBox:        handleSBox(S, D, Attr); break;
+  case AttributeList::AT_SBox:        handleSBoxAttr(S, D, Attr); break;
   case AttributeList::AT_MaskedCopy: handleMaskedCopyAttr (S, D, Attr); break;
 //Fine aggiunto
   case AttributeList::AT_IBAction:    handleIBAction(S, D, Attr); break;

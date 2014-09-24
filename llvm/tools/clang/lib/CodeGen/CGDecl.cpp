@@ -27,6 +27,8 @@
 #include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/Type.h"
+#include "llvm/IR/Metadata.h"
+
 using namespace clang;
 using namespace CodeGen;
 
@@ -334,6 +336,12 @@ void CodeGenFunction::EmitStaticVarDecl(const VarDecl &D,
   if (D.hasAttr<UsedAttr>())
     CGM.AddUsedGlobal(var);
 
+//Aggiunto DFA
+    if (D.hasAttr<SBoxAttr>()) {
+    llvm::NamedMDNode *MD = CGM.getModule().getOrInsertNamedMetadata("sbox.vars");
+    MD->addOperand(llvm::MDNode::get(getLLVMContext(), var));
+  }
+//Fine aggiunto
 
   // We may have to cast the constant because of the initializer
   // mismatch above.
@@ -975,20 +983,6 @@ CodeGenFunction::EmitAutoVarAlloca(const VarDecl &D) {
         DI->EmitDeclareOfAutoVariable(&D, DeclPtr, Builder);
       }
     }
-
-//Aggiunto DFA
-  if (D.hasAttr<SBoxAttr>()) {
-   if(isa<llvm::Instruction>(emission.Address)){
-   llvm::Instruction* Alloc = cast<llvm::Instruction>(emission.Address);
-   //llvm::errs() << &args;
-   llvm::Value *ar = Alloc;
-   llvm::Value *V = llvm::MDNode::get(Alloc->getContext(),ar);
-   llvm::Value *F = CGM.getIntrinsic(llvm::Intrinsic::crypto_sbox);
-   Builder.CreateCall(F,V);
-   }
-  }
-//Fine
-
 
   if (D.hasAttr<AnnotateAttr>())
       EmitVarAnnotations(&D, emission.Address);

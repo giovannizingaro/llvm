@@ -34,33 +34,28 @@ CalcDFG* llvm::createCalcDFGPass()
 {
     return new CalcDFG();
 }
-
+/*
 unsigned int CalcDFG::getMSBEverSet_Fault()
 {
     return MSBEverSet_Fault;
 }
+*/
 unsigned int CalcDFG::getMSBEverSet()
 {
-    return MSBEverSet;
+    return Analysis::getMSBEverSet();
 }
 bool CalcDFG::functionMarked(Function* ptr){
-
-    return (markedfunctions.count(ptr) > 0);
-}
-void waitTillReady(sem_t *ready){
-    if(ready==NULL) return;
-    sem_wait(ready);
-}
-void done(sem_t *ready){
-    if(ready==NULL) return;
-    sem_post(ready);
+    return Analysis::functionMarked(ptr);
 }
 
+void CalcDFG::setAsTransformed(Function* ptr){
+Analysis::setAsTransformed(ptr);
+}
 
 bool CalcDFG::runOnFunction(llvm::Function& Fun)
 {
 	if(!Analysis::init(getAnalysis<TaggedData>(),Fun)) return false;
-	else markedfunctions.insert(&Fun);
+	//else markedfunctions.insert(&Fun);
 	ForwardAnalysis* forw = new ForwardAnalysis();
 	forw->calcAnalysis();
 	BackwardAnalysis* back = new BackwardAnalysis();
@@ -85,24 +80,13 @@ bool CalcDFG::shouldBeProtected(Instruction* ptr)
 
 unsigned int CalcDFG::getOperandSize(llvm::Instruction* ptr)
 {
-	return getOperandSize(ptr->getType());
+	return Analysis::getOperandSize(ptr);
 }
- unsigned int CalcDFG::getOperandSize(llvm::Type* t)
+
+unsigned int CalcDFG::getOperandSize(llvm::Type* t)
 {
-    if(t->isVoidTy()) return 0;
-	while(t->isPointerTy()) {
-		t = t->getPointerElementType();
-	}
-    //TODO: espandere strutture supportate
-    int dim = t->getScalarSizeInBits();
-    if(dim > 0) return dim;
-    dim = t->getPrimitiveSizeInBits();
-    if(dim > 0) return dim;
-    errs() << "Errore: OperandSize==0 per tipo " << t << "\n";
-    return 0;
-
+	return Analysis::getOperandSize(t);
 }
-
 
 void CalcDFG::getAnalysisUsage(llvm::AnalysisUsage& AU) const
 {

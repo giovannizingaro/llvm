@@ -34,11 +34,47 @@ namespace llvm
 {
 namespace NoCryptoFA{
 
+		struct KeyStartInfo {
+			public:
+				llvm::Value* ptr;
+				long index;
+				KeyStartInfo(llvm::Value* _ptr, long _idx) {
+					ptr = _ptr;
+					index = _idx;
+				}
+				KeyStartInfo(llvm::Value* _ptr) {
+					ptr = _ptr;
+					index = -1;
+				}
+				KeyStartInfo() {
+					index = -1;
+					ptr = NULL;
+				}
+				friend bool operator== (const KeyStartInfo& a, const KeyStartInfo& b);
+				friend bool operator< (const KeyStartInfo& a, const KeyStartInfo& b);
+		};
+		inline bool operator== (const NoCryptoFA::KeyStartInfo& a, const NoCryptoFA::KeyStartInfo& b)
+		{
+			return a.index == b.index && a.ptr == b.ptr;
+		}
+		inline bool operator< (const NoCryptoFA::KeyStartInfo& a, const NoCryptoFA::KeyStartInfo& b)
+		{
+			if(a.ptr != b.ptr) {
+				return a.ptr < b.ptr;
+			} else {
+				return a.index < b.index;
+			}
+		}
+
 
 class Analysis {
 
 public:
 	Analysis(){}
+
+static void setAsTransformed(Function* ptr) {
+	alreadyTransformed.insert(ptr);
+}
 
 static unsigned int getOperandSize(llvm::Instruction* ptr)
 {
@@ -60,6 +96,15 @@ static unsigned int getOperandSize(llvm::Type* t)
 
 }
 
+static unsigned int getMSBEverSet()
+{
+    return MSBEverSet;
+}
+
+static bool functionMarked(Function* ptr){
+
+    return (markedfunctions.count(ptr) > 0);
+}
 
 static bool init(TaggedData& td,Function& Fun){
 	keyLatestPos = 0;

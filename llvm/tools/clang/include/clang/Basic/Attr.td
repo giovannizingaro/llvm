@@ -190,9 +190,8 @@ def Plain : Attr {
         let Subjects = [Var];
 }
 
-def SBox : Attr {
-	let Spellings=[GNU<"sbox">,CXX11<"","sbox">];
-	let Subjects = [Var];
+def SBox : InheritableAttr {
+  let Spellings = [GNU<"sbox">];
 }
 
 def MaskedCopy: Attr {
