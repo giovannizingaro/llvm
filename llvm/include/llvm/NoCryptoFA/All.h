@@ -4,6 +4,10 @@
 #include "TaggedData.h"
 #include "CalcDFG.h"
 #include "DFGPrinter.h"
+#include "MaxTestPass.h"
+#include "InstructionReplace.h"
+#include "InstructionCount.h"
+
 namespace
 {
 	static struct NCFAForcePassLinking {
@@ -17,6 +21,10 @@ namespace
 			std::cout << "init" << std::endl;
 			(void) llvm::createTaggedDataPass();
 			(void) llvm::createDFGPrinterPass();
+                        (void) llvm::createMaxTestPass();
+                        (void) llvm::createInstructionReplacePass();
+                        (void) llvm::createInstructionCountPass();
+
 		}
 	} NCFAForcePassLinking; // Force link by creating a global definition.
 }
