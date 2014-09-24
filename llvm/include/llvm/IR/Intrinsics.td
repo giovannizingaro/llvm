@@ -365,7 +365,8 @@ let Properties = [IntrNoMem] in {
 //Aggiunto DFA
   def int_crypto_key : Intrinsic<[],[llvm_metadata_ty]>;
   def int_crypto_plain : Intrinsic<[],[llvm_metadata_ty]>;
-
+  def int_crypto_sbox : Intrinsic<[],[llvm_metadata_ty]>;
+//Fine aggiunto
 
 
 //===------------------ Exception Handling Intrinsics----------------------===//
