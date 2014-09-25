@@ -9,24 +9,33 @@ namespace NoCryptoFA{
 class BackwardAnalysis : public Analysis {
 
 public:
-BackwardAnalysis(): Analysis() {}
+set<Instruction*> vulnerableBottom;
+list<pair<int,Instruction*> > sortedList;
+set<Instruction*> firstVulnerableUses;
 
-	void calcAnalysis(){
-		set<Instruction*> vulnerableBottom;
-		list<pair<int,Instruction*> > sortedList;
+void initBackward(){
+		
+		
 		sortedList.insert(sortedList.begin(),candidateVulnerablePointsCT.begin(),candidateVulnerablePointsCT.end());
 
 		lookForMostVulnerableInstructionRepresentingTheEntireUserKey(sortedList,&vulnerableBottom,&NoCryptoFA::InstructionMetadata::isVulnerableBottomSubKey);
 
-		vector<bitset<MAX_KEYBITS> > post_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableBottom,&NoCryptoFA::InstructionMetadata::post_own,&MSBEverSet,"vuln_bottom");
-
-		set<Instruction*> firstVulnerableUses = set<Instruction*>();
+		firstVulnerableUses = set<Instruction*>();
 		for(Instruction * p : vulnerableBottom) {
 			for(auto u = p->use_begin(); u != p->use_end(); ++u) {
 				Instruction* Inst = dyn_cast<Instruction>(*u);
 				firstVulnerableUses.insert(Inst);
 			}
 		}
+}
+
+//public:
+BackwardAnalysis(): Analysis() {}
+
+	void calcAnalysis(){
+
+		initBackward();
+			vector<bitset<MAX_KEYBITS> >  post_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableBottom,&NoCryptoFA::InstructionMetadata::post_own,&MSBEverSet,"vuln_bottom");
 
 		runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcPost(p);return false;});
 		errs() << "POST-subkeys prop done\n";

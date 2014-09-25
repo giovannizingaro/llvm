@@ -6,28 +6,15 @@
 namespace llvm
 {
 namespace NoCryptoFA{
-class FaultAnalysis : public Analysis {
+class FaultAnalysis : public BackwardAnalysis {
+
 
 public:
-FaultAnalysis(): Analysis() {}
+FaultAnalysis(): BackwardAnalysis() {}
 
 	void calcAnalysis(){
-		set<Instruction*> vulnerableBottom;
-		list<pair<int,Instruction*> > sortedList;
-		sortedList.insert(sortedList.begin(),candidateVulnerablePointsCT.begin(),candidateVulnerablePointsCT.end());
-
-		lookForMostVulnerableInstructionRepresentingTheEntireUserKey(sortedList,&vulnerableBottom,&NoCryptoFA::InstructionMetadata::isVulnerableBottomSubKey);
-
-		vector<bitset<MAX_KEYBITS> > post_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableBottom,&NoCryptoFA::InstructionMetadata::post_own,&MSBEverSet,"vuln_bottom");
-
-		set<Instruction*> firstVulnerableUses = set<Instruction*>();
-		for(Instruction * p : vulnerableBottom) {
-			for(auto u = p->use_begin(); u != p->use_end(); ++u) {
-				Instruction* Inst = dyn_cast<Instruction>(*u);
-				firstVulnerableUses.insert(Inst);
-			}
-		}
-
+		initBackward();
+		vector<bitset<MAX_KEYBITS> >  post_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableBottom,&NoCryptoFA::InstructionMetadata::post_own,&MSBEverSet,"vuln_bottom");
 		runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {calcFAKeyBackProp(p);return false;});
 
 	std::map<std::bitset<MAX_OUTBITS>, unsigned > EquivocationMap; 

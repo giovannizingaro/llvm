@@ -155,9 +155,10 @@ static bool init(TaggedData& td,Function& Fun){
 	runBatched(keyStarts, [](Instruction * p,long batchn)->bool {calcKeydep(p); return false;});
 	return true;
 }
-//	virtual void calcAnalysis();
 
-//protected:
+	virtual void calcAnalysis() = 0;
+
+protected:
 	static std::set<Instruction*> cipherOutPoints;
 	static std::multimap<int,Instruction*> candidateVulnerablePointsCT;
 	static std::multimap<int,Instruction*> candidateVulnerablePointsPT;
