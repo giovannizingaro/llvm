@@ -21,8 +21,8 @@ void calcAnalysis(){
 	vector<bitset<MAX_KEYBITS> > pre_subkeytokey = assignKeyOwn<MAX_SUBBITS>(vulnerableTop,&NoCryptoFA::InstructionMetadata::pre_own,&MSBEverSet,"vuln_top");
 
 	runBatched(vulnerableTop, [this](Instruction * p,long batchn)->bool {calcPre(p);return false;});
-	errs() << "Vuln=";
-	errs () << vulnerableTop.size();
+//	errs() << "Vuln=";
+//	errs () << vulnerableTop.size();
 	errs() << "\nPRE-subkeys prop done\n";
 
 	runBatched(keyStarts, [pre_subkeytokey,this](Instruction * p,long batchn)->bool {
@@ -48,6 +48,7 @@ void calcAnalysis(){
 	});
 
 	runBatched(vulnerableTop, [this](Instruction * p,long batchn)->bool {checkPre_masking(p);return false;});
+	errs() << "\nPRE masking done\n"; 
 
 }
 
@@ -90,7 +91,7 @@ void checkPre_masking(llvm::Instruction* ptr)
                 }
             }
         }
- }
+}
 
 
 };

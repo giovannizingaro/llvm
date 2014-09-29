@@ -62,7 +62,6 @@ bool CalcDFG::runOnFunction(llvm::Function& Fun)
 	back->calcAnalysis();
 	FaultAnalysis* fault = new FaultAnalysis();
 	fault-> calcAnalysis();
-	errs() << "calc pre/post masking needs done\n";
 	return false;
 }
 

@@ -14,10 +14,7 @@ list<pair<int,Instruction*> > sortedList;
 set<Instruction*> firstVulnerableUses;
 
 void initBackward(){
-		
-		
 		sortedList.insert(sortedList.begin(),candidateVulnerablePointsCT.begin(),candidateVulnerablePointsCT.end());
-
 		lookForMostVulnerableInstructionRepresentingTheEntireUserKey(sortedList,&vulnerableBottom,&NoCryptoFA::InstructionMetadata::isVulnerableBottomSubKey);
 
 		firstVulnerableUses = set<Instruction*>();
@@ -63,6 +60,7 @@ BackwardAnalysis(): Analysis() {}
 		});
 
 		runBatched(firstVulnerableUses, [this](Instruction * p,long batchn)->bool {checkPost_masking(p);return false;});
+		errs() << "\nPOST masking done\n"; 
 
 	}
 
@@ -120,6 +118,7 @@ void calcPost(Instruction* ptr)
 		     }
 		 }
 	    }
+ 
 }
 
 
